@@ -2,5 +2,6 @@
 members = [
     "day_01_puzzle_01",
     "day_01_puzzle_02",
-    "day_02_puzzle_01"
+    "day_02_puzzle_01",
+    "day_02_puzzle_02",
 ]
