@@ -1,5 +1,5 @@
 pub struct Submarine {
-	position: i32,
+	horizontal_position: i32,
 	depth: i32,
 }
 
@@ -7,29 +7,59 @@ impl Submarine {
 
 	pub fn new() -> Submarine {
 		Submarine {
-			position: 0,
+			horizontal_position: 0,
 			depth: 0,
 		}
 	}
 
-	pub fn position(&self) -> i32 {
-		self.position
+	pub fn horizontal_position(&self) -> i32 {
+		self.horizontal_position
 	}
 
 	pub fn depth(&self) -> i32 {
 		self.depth
 	}
 
-	pub fn forward(&mut self, delta: i32) {
-		self.position += delta;
+	fn forward(&mut self, value: i32) {
+		self.horizontal_position += value;
 	}
 
-	pub fn down(&mut self, delta: i32) {
-		self.depth += delta;
+	fn down(&mut self, value: i32) {
+		self.depth += value;
 	}
 
-	pub fn up(&mut self, delta: i32) {
-		self.depth -= delta;
+	fn up(&mut self, value: i32) {
+		self.depth -= value;
+	}
+
+	pub fn execute_command(&mut self, command: &str) {
+		let command = Command::parse(&command);
+		match command {
+			Command::Forward(value) => self.forward(value),
+			Command::Down(value) => self.down(value),
+			Command::Up(value) => self.up(value),
+		}
+	}
+}
+
+#[derive(Debug, PartialEq)]
+enum Command {
+	Forward(i32),
+	Down(i32),
+	Up(i32),
+}
+
+impl Command {
+	fn parse(command: &str) -> Command {
+		let mut split = command.split_whitespace();
+		let name = split.next().unwrap();
+		let value = split.next().unwrap().trim().parse().expect("Command value should be an integer");
+		match name {
+			"forward" => Command::Forward(value),
+			"down" => Command::Down(value),
+			"up" => Command::Up(value),
+			_ => panic!("Unknown command '{}' provided - expected 'forward', 'down', or 'up'", name),
+		}
 	}
 }
 
@@ -42,7 +72,7 @@ mod tests {
 		let sub = Submarine::new();
 
 		assert_eq!(0, sub.depth());
-		assert_eq!(0, sub.position());
+		assert_eq!(0, sub.horizontal_position());
 	}
 
 	#[test]
@@ -52,7 +82,7 @@ mod tests {
 		sub.forward(5);
 		sub.forward(2);
 
-		assert_eq!(17, sub.position());
+		assert_eq!(17, sub.horizontal_position());
 		assert_eq!(0, sub.depth());
 	}
 
@@ -63,7 +93,7 @@ mod tests {
 		sub.down(2);
 
 		assert_eq!(7, sub.depth());
-		assert_eq!(0, sub.position());
+		assert_eq!(0, sub.horizontal_position());
 	}
 
 	#[test]
@@ -73,6 +103,24 @@ mod tests {
 		sub.up(1);
 
 		assert_eq!(-21, sub.depth());
-		assert_eq!(0, sub.position());
+		assert_eq!(0, sub.horizontal_position());
+	}
+
+	#[test]
+	fn test_parse_forward() {
+		let command = Command::parse("forward 1");
+		assert_eq!(Command::Forward(1), command);
+	}
+
+	#[test]
+	fn test_parse_down() {
+		let command = Command::parse("down 5");
+		assert_eq!(Command::Down(5), command);
+	}
+
+	#[test]
+	fn test_parse_up() {
+		let command = Command::parse("up 13");
+		assert_eq!(Command::Up(13), command);
 	}
 }
