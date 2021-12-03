@@ -15,4 +15,5 @@ fn main() -> std::io::Result<()> {
 
     println!("Submarines ends up at horizontal position {} and depth {}", sub.horizontal_position(), sub.depth());
     println!("Multiplied together they are {}", sub.horizontal_position() * sub.depth());
-    Ok(())}
+    Ok(())
+}
