@@ -20,40 +20,14 @@ impl<'input> LifeSupport<'input> {
 	}
 
 	pub fn oxygen_rating(&self) -> i32 {
-		let mut current_diagnostics = self.diagnostic_data.clone();
-
-		let mut index = 0;
-
-		while current_diagnostics.len() > 0 {
-			let mut current_summary = DiagnosticSummary::new();
-			for diagnostic in current_diagnostics.iter() {
-				current_summary.analyze_diagnostic(diagnostic);
-			}
-
-			let current_oxygen = current_summary.oxygen_rating(index);
-
-			current_diagnostics = current_diagnostics
-				.into_iter()
-				.filter(|d| diagnostic_data_matches(d, current_oxygen, index))
-				.collect();
-			
-			if current_diagnostics.len() == 0 {
-				panic!("After filtering on index {} there are no diagnostics", index);
-			} else if current_diagnostics.len() == 1 {
-				break;
-			}
-			index += 1;
-
-			if index >= current_diagnostics[0].len() {
-				// can only scan to the last character
-				break;
-			}
-		}
-
-		convert_to_decimal(current_diagnostics[0])
+		self.compute_rating(|summary: &DiagnosticSummary, index| summary.oxygen_rating(index))
 	}
 
 	pub fn scrubber_rating(&self) -> i32 {
+		self.compute_rating(|summary: &DiagnosticSummary, index| summary.scrubber_rating(index))
+	}
+
+	fn compute_rating<F>(&self, get_rating: F) -> i32 where F: Fn(&DiagnosticSummary, usize) -> u8 {
 		let mut current_diagnostics = self.diagnostic_data.clone();
 
 		let mut index = 0;
@@ -64,11 +38,11 @@ impl<'input> LifeSupport<'input> {
 				current_summary.analyze_diagnostic(diagnostic);
 			}
 
-			let current_scrubber = current_summary.scrubber_rating(index);
+			let current_rating = get_rating(&current_summary, index);
 
 			current_diagnostics = current_diagnostics
 				.into_iter()
-				.filter(|d| diagnostic_data_matches(d, current_scrubber, index))
+				.filter(|d| diagnostic_data_matches(d, current_rating, index))
 				.collect();
 			
 			if current_diagnostics.len() == 0 {
