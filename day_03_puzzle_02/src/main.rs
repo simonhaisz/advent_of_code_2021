@@ -18,25 +18,22 @@ fn main() -> std::io::Result<()> {
     let file = File::open("./day_03_puzzle_01/input.txt")?;
     let reader = BufReader::new(file);
 
-    let mut entries: Vec<String> = vec!();
+    let mut set_size = false;
+
+    let mut life_support = LifeSupport::new();
     for line in reader.lines() {
         if let Ok(line) = line {
             if line.trim().len() > 0 {
-                entries.push(String::from(line.trim()));
+                if !set_size {
+                    life_support.set_size(line.trim().len());
+                }
+                let data = u32::from_str_radix(&line.trim(), 2).unwrap();
+                life_support.load_diagnostic(data);
             }
         }
     }
-    println!("Stats after reading file: {:#?}", reg.change());
-    let mut life_support = LifeSupport::new();
-    for entry in entries.iter() {
-        if entry.trim().len() == 0 {
-            // skip any rows with no content
-            continue;
-        }
-        life_support.load_diagnostic(&entry.trim());
-    }
 
-    println!("Stats after processing entries: {:#?}", reg.change());
+    println!("Stats after processing data: {:#?}", reg.change());
 
     let oxygen = life_support.oxygen_rating();
     let scrubber = life_support.scrubber_rating();
