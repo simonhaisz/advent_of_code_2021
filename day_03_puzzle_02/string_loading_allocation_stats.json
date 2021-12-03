@@ -1,0 +1,10 @@
+{
+	"Stats": {
+		"allocations": 2027,
+		"deallocations": 1024,
+		"reallocations": 19,
+		"bytes_allocated": 109202,
+		"bytes_deallocated": 55218,
+		"bytes_reallocated": 40856
+	}
+}
