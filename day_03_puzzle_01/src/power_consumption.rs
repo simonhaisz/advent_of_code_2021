@@ -73,7 +73,7 @@ mod tests {
 		power.analyze_entry("010");
 		power.analyze_entry("110");
 		let epsilon_rate = power.epsilon_rate();
-		// 101 => 9
+		// 101 => 5
 		assert_eq!(5, epsilon_rate);
 	}
 }
