@@ -1,13 +1,17 @@
+use std::collections::HashSet;
+
 pub struct BingoCard {
     size: usize,
     numbers: Vec<u32>,
+    matching_number_indicies: HashSet<usize>,
 }
 
 impl BingoCard {
     pub fn new() -> BingoCard {
         BingoCard {
             size: 0,
-            numbers: vec!()
+            numbers: vec!(),
+            matching_number_indicies: HashSet::new(),
         }
     }
 
@@ -28,6 +32,67 @@ impl BingoCard {
             false
         } else {
             self.numbers.len() >= self.size * self.size
+        }
+    }
+
+    fn dabbed_square(&self, number: u32) -> Option<usize> {
+        for (i, n) in self.numbers.iter().enumerate() {
+            if *n == number {
+                return Some(i);
+            }
+        }
+        None
+    }
+
+    fn bingo(&self) -> bool {
+        if self.matching_number_indicies.len() < self.size {
+            false
+        } else {
+            // check for horizontals
+            'row: for row in 0..self.size {
+                for column in 0..self.size {
+                    let index = row * self.size + column;
+                    if !self.matching_number_indicies.contains(&index) {
+                        continue 'row;
+                    }
+                }
+                return true;
+            }
+
+            // check for verticals
+            'column: for column in 0..self.size {
+                for row in 0..self.size {
+                    let index = row * self.size + column;
+                    if !self.matching_number_indicies.contains(&index) {
+                        continue 'column;
+                    }
+                }
+                return true;
+            }
+
+            false
+        }
+    }
+
+    pub fn number_called(&mut self, number: u32) -> Option<u32> {
+        let dabbed_square = self.dabbed_square(number);
+        if let Some(dabbed_square) = dabbed_square {
+            self.matching_number_indicies.insert(dabbed_square);
+
+            if self.bingo() {
+                let mut undabbed_numbers_sum = 0;
+                for i in 0..(self.size * self.size) {
+                    if !self.matching_number_indicies.contains(&i) {
+                        undabbed_numbers_sum += self.numbers[i];
+                    }
+                }
+                Some(undabbed_numbers_sum * number)
+            } else {
+                None
+            }
+        } else {
+            // cannot win if number wasn't dabbed (assuming player was paying attenting to the previous numbers)
+            None
         }
     }
 }
@@ -89,5 +154,36 @@ mod tests {
         card.load_row(" 7 22 37");
         card.load_row("15 30 45");
         card.load_row("16 21 46");
+    }
+
+    #[test]
+    fn test_dabbing_squares() {
+        let mut card = BingoCard::new();
+        card.load_row(" 1 16 31");
+        card.load_row(" 7 22 37");
+        card.load_row("15 30 45");
+
+        assert_eq!(None, card.dabbed_square(2));
+        assert_eq!(None, card.dabbed_square(5));
+        assert_eq!(Some(3), card.dabbed_square(7));
+        assert_eq!(Some(7), card.dabbed_square(30));
+    }
+
+    #[test]
+    fn test_bingo() {
+        let mut card = BingoCard::new();
+        card.load_row(" 1 16 31");
+        card.load_row(" 7 22 37");
+        card.load_row("15 30 45");
+
+        assert_eq!(None, card.number_called(5));
+        assert_eq!(None, card.number_called(10));
+        assert_eq!(None, card.number_called(15));
+        assert_eq!(None, card.number_called(20));
+        assert_eq!(None, card.number_called(25));
+        assert_eq!(None, card.number_called(30));
+        assert_eq!(None, card.number_called(35));
+        assert_eq!(None, card.number_called(40));
+        assert_eq!(Some(5130), card.number_called(45));
     }
 }
