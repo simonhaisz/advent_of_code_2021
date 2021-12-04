@@ -50,6 +50,5 @@ mod tests {
         assert_eq!(Some(98), ball.next());
         assert_eq!(Some(27), ball.next());
         assert_eq!(None, ball.next());
-
     }
 }
