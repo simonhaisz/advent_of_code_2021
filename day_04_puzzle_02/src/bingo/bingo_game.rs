@@ -22,26 +22,6 @@ impl BingoGame {
         self.cards.push(card);
     }
 
-    pub fn play_game(&mut self) -> Option<Vec<Winner>> {
-        if let Some(ball) = &mut self.ball {
-            for number in ball {
-                let mut winners = vec!();
-
-                for (i, card) in self.cards.iter_mut().enumerate() {
-                    if let Some(score) = card.number_called(number) {
-                        winners.push(Winner::new(number, i, score));
-                    }
-                }
-
-                if winners.len() > 0 {
-                    return Some(winners);
-                }
-            }
-        }
-
-        None
-    }
-
     pub fn everyones_a_winner(&mut self) -> Option<Vec<Winner>> {
         if let Some(ball) = &mut self.ball {
             let mut winners = vec!();
@@ -73,6 +53,7 @@ impl BingoGame {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Winner {
     winning_number: u32,
     board_index: usize,
@@ -143,9 +124,16 @@ mod tests {
 
         game.add_card(card);
 
-        let winners = game.play_game();
+        let winners = game.everyones_a_winner();
 
-        assert_eq!(Some(vec![(24, 2, 4512)]), winners);
+        assert_eq!(
+            Some(vec![
+                Winner::new(24, 2, 4512),
+                Winner::new(16, 0, 2192),
+                Winner::new(13, 1, 1924),
+            ]),
+            winners
+        );
 
     }
 }
