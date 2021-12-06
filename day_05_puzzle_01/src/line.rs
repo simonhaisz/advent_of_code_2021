@@ -91,9 +91,27 @@ impl Line {
     pub fn max_y(&self) -> u32 {
         cmp::max(self.start().y(), self.end().y())
     }
+
+    pub fn points(&self) -> Vec<Point> {
+        let mut points = vec![];
+
+        if self.horizontal() {
+            let y = self.start().y();
+            for x in self.min_x()..=self.max_x() {
+                points.push(Point::new(x, y));
+            }
+        } else if self.vertical() {
+            let x = self.start().x();
+            for y in self.min_y()..=self.max_y() {
+                points.push(Point::new(x, y));
+            }
+        }
+
+        points
+    }
 }
 
-pub fn intersections(a: &Line, b: &Line) -> Vec<Point> {
+pub fn intersections_optimized(a: &Line, b: &Line) -> Vec<Point> {
     let mut points = vec!();
 
     if (!a.horizontal() && !a.vertical()) || (!b.horizontal() && !b.vertical()) {
@@ -190,6 +208,23 @@ pub fn intersections(a: &Line, b: &Line) -> Vec<Point> {
     points
 }
 
+pub fn intersections_unoptimized(a: &Line, b: &Line) -> Vec<Point> {
+    let mut points = vec![];
+
+    let a_points = a.points();
+    let b_points = b.points();
+
+    for a_point in a_points.iter() {
+        for b_point in b_points.iter() {
+            if a_point == b_point {
+                points.push(Point::new(a_point.x(), a_point.y()));
+            }
+        }
+    }
+
+    points
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -236,7 +271,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(1, 0), Point::new(1, 5));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![] as Vec<Point>, points);
 
@@ -244,7 +279,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 2), Point::new(20, 2));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![] as Vec<Point>, points);
     }
@@ -255,7 +290,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(1, 0), Point::new(5, 0));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![] as Vec<Point>, points);
 
@@ -263,7 +298,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 2), Point::new(0, 20));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![] as Vec<Point>, points);
     }
@@ -274,7 +309,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 4), Point::new(0, 7));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(0, 4), Point::new(0, 5)], points);
 
@@ -282,7 +317,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(10, 0), Point::new(20, 0));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(10, 0)], points);
     }
@@ -293,7 +328,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 2), Point::new(5, 2));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(0, 2)], points);
 
@@ -301,7 +336,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(2, 1), Point::new(2, 20));
 
-        let points = intersections(&line_a, &line_b);
+        let points = intersections_unoptimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(2, 3)] as Vec<Point>, points);
     }

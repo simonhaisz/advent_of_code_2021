@@ -27,7 +27,7 @@ impl Grid {
                 let a = &lines[outer];
                 let b = &lines[inner];
                 compare_counter += 1;
-                for p in line::intersections(a, b).into_iter() {
+                for p in line::intersections_unoptimized(a, b).into_iter() {
                     overlaps.insert(p);
                 }
             }
