@@ -19,17 +19,23 @@ impl Grid {
     pub fn overlaps(&self) -> HashSet<Point> {
         let mut overlaps = HashSet::new();
 
-        let filtered_lines = self.lines.iter().filter(|l| l.horizontal() || l.vertical()).collect::<Vec<&Line>>();
+        let lines = self.lines.iter().collect::<Vec<&Line>>();
 
-        for outer in 0..(filtered_lines.len()-1) {
-            for inner in (outer+1)..filtered_lines.len() {
-                let a = &filtered_lines[outer];
-                let b = &filtered_lines[inner];
+        let mut compare_counter = 0;
+        for outer in 0..(lines.len()-1) {
+            for inner in (outer+1)..lines.len() {
+                let a = &lines[outer];
+                let b = &lines[inner];
+                compare_counter += 1;
                 for p in line::intersections(a, b).into_iter() {
                     overlaps.insert(p);
                 }
             }
         }
+
+        let expected_comparisons = lines.len() * (lines.len() - 1) / 2;
+
+        println!("Compared {} pairs of lines together (expected {}) from a total of {}", compare_counter, expected_comparisons, lines.len());
 
         overlaps
     }
@@ -94,7 +100,10 @@ mod tests {
         let lines = input.split("\n").filter(|l| !l.trim().is_empty()).collect::<Vec<&str>>();
 
         for line in lines.iter() {
-            grid.add_line(Line::from(line));
+            let l = Line::from(line);
+            if l.horizontal() || l.vertical() {
+                grid.add_line(l);
+            }
         }
 
         let overlaps = grid.overlaps();
@@ -104,6 +113,5 @@ mod tests {
         assert_eq!(true, overlaps.contains(&Point::new(0, 9)));
         assert_eq!(true, overlaps.contains(&Point::new(1, 9)));
         assert_eq!(true, overlaps.contains(&Point::new(2, 9)));
-
     }
 }
