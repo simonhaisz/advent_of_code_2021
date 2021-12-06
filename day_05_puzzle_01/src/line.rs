@@ -176,7 +176,7 @@ pub fn intersections_optimized(a: &Line, b: &Line) -> Vec<Point> {
         let b_min_x = b.min_x();
         let b_max_x = b.max_x();
 
-        let x_overlap = if a_min_y == a_max_x && b_min_x <= a_min_x && b_max_x >= a_min_x {
+        let x_overlap = if a_min_x == a_max_x && b_min_x <= a_min_x && b_max_x >= a_min_x {
             true
         } else if b_min_x == b_max_x && a_min_x <= b_min_x && a_max_x >= b_min_x {
             true
@@ -279,7 +279,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 2), Point::new(20, 2));
 
-        let points = intersections_unoptimized(&line_a, &line_b);
+        let points = intersections_optimized(&line_a, &line_b);
 
         assert_eq!(vec![] as Vec<Point>, points);
     }
@@ -298,7 +298,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 2), Point::new(0, 20));
 
-        let points = intersections_unoptimized(&line_a, &line_b);
+        let points = intersections_optimized(&line_a, &line_b);
 
         assert_eq!(vec![] as Vec<Point>, points);
     }
@@ -317,7 +317,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(10, 0), Point::new(20, 0));
 
-        let points = intersections_unoptimized(&line_a, &line_b);
+        let points = intersections_optimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(10, 0)], points);
     }
@@ -328,7 +328,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(0, 2), Point::new(5, 2));
 
-        let points = intersections_unoptimized(&line_a, &line_b);
+        let points = intersections_optimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(0, 2)], points);
 
@@ -336,7 +336,7 @@ mod tests {
 
         let line_b = Line::new(Point::new(2, 1), Point::new(2, 20));
 
-        let points = intersections_unoptimized(&line_a, &line_b);
+        let points = intersections_optimized(&line_a, &line_b);
 
         assert_eq!(vec![Point::new(2, 3)] as Vec<Point>, points);
     }
