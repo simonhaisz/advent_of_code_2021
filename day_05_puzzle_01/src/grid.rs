@@ -1,6 +1,4 @@
 use std::collections::HashSet;
-use std::fs::File;
-use std::io::{BufReader, BufRead};
 use crate::line::{self, Line, Point};
 
 pub struct Grid {
@@ -23,37 +21,17 @@ impl Grid {
 
         let lines = self.lines.iter().collect::<Vec<&Line>>();
 
-        // Failed to find 'Point { x: 213, y: 597 }' in wrong results
-        // 213,740 -> 213,167
-        // Failed to find intersections between:
-        // line a: Line { start: Point { x: 213, y: 740 }, end: Point { x: 213, y: 167 } }
-        // line b: Line { start: Point { x: 166, y: 335 }, end: Point { x: 561, y: 335 } }
-        let target_line_a = Line::new(Point::new(213, 740), Point::new(213, 167));
-        let target_line_b = Line::new(Point::new(166, 335), Point::new(561, 335));
         let mut compare_counter = 0;
-        'outer: for outer in 0..(lines.len()-1) {
-            'inner: for inner in (outer+1)..lines.len() {
+        for outer in 0..(lines.len()-1) {
+            for inner in (outer+1)..lines.len() {
                 let a = lines[outer];
                 let b = lines[inner];
-                // if *a != target_line {
-                //     continue 'outer;
-                // } else if *b != target_line {
-                //     continue 'inner;
-                // }
-                if *a != target_line_a {
-                    continue 'outer;
-                }
-                if *b != target_line_b {
-                    continue 'inner;
-                }
                 compare_counter += 1;
                 let points = line::intersections_optimized(a, b);
                 if points.len() > 0 {
-                    println!("Found intersection between lines\nline a: {:?}\nline b: {:?}", a, b);
-                    // for p in points.into_iter() {
-                    //     overlaps.insert(p);
-                    // }
-                    // break 'outer;
+                    for p in points.into_iter() {
+                        overlaps.insert(p);
+                    }
                 }
             }
         }
@@ -68,6 +46,9 @@ impl Grid {
 
 #[cfg(test)]
 mod tests {
+    use std::fs::File;
+    use std::io::{BufReader, BufRead};
+
     use super::*;
 
     #[test]
@@ -161,23 +142,5 @@ mod tests {
 
         let overlaps = grid.overlaps();
         assert_eq!(4728, overlaps.len());
-    }
-
-    #[test]
-    fn mismatch() {
-        for correct_line in BufReader::new(File::open("./correct_result.txt").unwrap()).lines() {
-            if let Ok(correct) = correct_line {
-                let mut match_found = false;
-                for wrong_line in BufReader::new(File::open("./wrong_result.txt").unwrap()).lines() {
-                    if let Ok(wrong) = wrong_line {
-                        if correct == wrong {
-                            match_found = true;
-                            break;
-                        }
-                    }
-                }
-                assert_eq!(true, match_found, "Failed to find '{}' in wrong results", correct);
-            }
-        }
     }
 }

@@ -31,10 +31,6 @@ fn main() -> std::io::Result<()> {
 
     println!("With all of the lines there are {} points where they overlap", overlaps.len());
 
-    for points in overlaps.iter() {
-        println!("{:?}", points);
-    }
-
     Ok(())
 }
 
