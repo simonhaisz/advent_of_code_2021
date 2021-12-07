@@ -8,7 +8,8 @@ fn main() -> std::io::Result<()> {
 
     let mut school = SchoolOfFish::from(data.trim());
 
-    for _ in 0..80 {
+    // for _ in 0..80 {
+    for _ in 0..256 {
         school.next_day();
     }
 

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub struct SchoolOfFish {
-    all_generations: HashMap<u32,HashMap<u32, u32>>,
+    all_generations: HashMap<u32,HashMap<u32, u64>>,
 }
 
 impl SchoolOfFish {
@@ -21,7 +21,7 @@ impl SchoolOfFish {
         }
     }
 
-    pub fn len(&self) -> u32 {
+    pub fn len(&self) -> u64 {
         let mut total_count = 0;
         for (_, generation) in &self.all_generations {
             for (_, count) in generation {
