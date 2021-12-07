@@ -336,6 +336,43 @@
             },
             "args": [],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day_06_puzzle_01'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day_06_puzzle_01",
+                    "--package=day_06_puzzle_01"
+                ],
+                "filter": {
+                    "name": "day_06_puzzle_01",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'day_06_puzzle_01'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=day_06_puzzle_01",
+                    "--package=day_06_puzzle_01"
+                ],
+                "filter": {
+                    "name": "day_06_puzzle_01",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
