@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate lazy_static;
 
-mod digital_display;
 mod frequency_analysis;
 
 use std::fs::File;
