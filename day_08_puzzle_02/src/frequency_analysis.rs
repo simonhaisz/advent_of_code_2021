@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use array_tool::vec::Intersect;
 
 pub struct FrequencyAnalysis<'input> {
 	signal_patterns: Vec<&'input str>,
