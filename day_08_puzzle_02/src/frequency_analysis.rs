@@ -14,6 +14,24 @@ lazy_static! {
 }
 
 impl<'input> FrequencyAnalysis<'input> {
+	pub fn from(input: &'input str) -> FrequencyAnalysis<'input> {
+		let mut split = input.split("|");
+
+		let signal_patterns = if let Some(signals) = split.next() {
+			signals.split(" ").filter(|&s| !s.is_empty()).collect::<Vec<&str>>()
+		} else {
+			panic!("Failed to parse '{}'", input);
+		};
+
+		let digital_output = if let Some(output) = split.next() {
+			output.split(" ").filter(|&s| !s.is_empty()).collect::<Vec<&str>>()
+		} else {
+			panic!("Failed to parse '{}'", input);
+		};
+		
+		FrequencyAnalysis::new(signal_patterns, digital_output)
+	}
+
 	pub fn new(signal_patterns: Vec<&'input str>, digital_output: Vec<&'input str>) -> FrequencyAnalysis<'input> {
 		let mut character_positions = HashMap::new();
 		for c in ALL_CHARACTERS.iter() {
@@ -71,10 +89,6 @@ impl<'input> FrequencyAnalysis<'input> {
 	fn run_pass(&mut self, digits: &Vec<&Digit>) {
 		let union_positions = compute_position_counts(&digits);
 		
-		println!("<position>: count");
-		for (p, count) in union_positions.iter() {
-			println!("{}: {}", p, count);
-		}
 		let mut matching_dignals: Vec<&str> = vec![];
 		'signals: for signal in self.signal_patterns.iter() {
 			for d in digits.iter() {
@@ -86,33 +100,20 @@ impl<'input> FrequencyAnalysis<'input> {
 		}
 		let union_characters = compute_character_counts(matching_dignals);
 
-		println!();
-
-		println!("<character>: count");
-		for (c, count) in union_characters.iter() {
-			println!("{}: {}", c, count);
-		}
-
-		println!();
-
 		let mut count_positions_characters = HashMap::new();
 		for count in 1..=digits.len() {
 			let count = count as u32;
 			
-			println!("<count>: <character>");
 			let mut matching_characters = vec![];
 			for (c, c_count) in union_characters.iter() {
 				if count == *c_count {
-					println!("{}: {}", count, c);
 					matching_characters.push(*c);
 				}
 			}
 
-			println!("<count>: <position>");
 			let mut matching_positions = vec![];
 			for (p, p_count) in union_positions.iter() {
 				if count == *p_count {
-					println!("{}: {}", count, p);
 					matching_positions.push(*p);
 				}
 			}
@@ -178,7 +179,7 @@ impl<'input> FrequencyAnalysis<'input> {
 		println!();
 	}
 
-	pub fn decoded_digits(&self) -> Vec<u32> {
+	fn decode_digits(&self) -> Vec<u32> {
 		let mut decoded_digits = vec![];
 		for encoded_digit in self.digital_output.iter() {
 			let mut decoded_positions = vec![];
@@ -196,6 +197,16 @@ impl<'input> FrequencyAnalysis<'input> {
 		}
 
 		decoded_digits
+	}
+
+	pub fn decode_display_output(&self) -> u32 {
+		let decoded_digits = self.decode_digits();
+		let mut output = 0;
+		for i in 0..decoded_digits.len() {
+			output += decoded_digits[i] * 10u32.pow((decoded_digits.len() - i - 1) as u32);
+		}
+
+		output
 	}
 }
 
@@ -329,7 +340,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![8, 3, 9, 4], analysis.decoded_digits());
+		assert_eq!(vec![8, 3, 9, 4], analysis.decode_digits());
 	}
 
 	#[test]
@@ -341,7 +352,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![9, 7, 8, 1], analysis.decoded_digits());
+		assert_eq!(vec![9, 7, 8, 1], analysis.decode_digits());
 	}
 
 	#[test]
@@ -353,7 +364,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![1, 1, 9, 7], analysis.decoded_digits());
+		assert_eq!(vec![1, 1, 9, 7], analysis.decode_digits());
 	}
 
 	#[test]
@@ -365,7 +376,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![9, 3, 6, 1], analysis.decoded_digits());
+		assert_eq!(vec![9, 3, 6, 1], analysis.decode_digits());
 	}
 
 	#[test]
@@ -377,7 +388,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![4, 8, 7, 3], analysis.decoded_digits());
+		assert_eq!(vec![4, 8, 7, 3], analysis.decode_digits());
 	}
 
 	#[test]
@@ -389,7 +400,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![8, 4, 1, 8], analysis.decoded_digits());
+		assert_eq!(vec![8, 4, 1, 8], analysis.decode_digits());
 	}
 
 	#[test]
@@ -401,7 +412,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![4, 5, 4, 8], analysis.decoded_digits());
+		assert_eq!(vec![4, 5, 4, 8], analysis.decode_digits());
 	}
 
 	#[test]
@@ -413,7 +424,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![1, 6, 2, 5], analysis.decoded_digits());
+		assert_eq!(vec![1, 6, 2, 5], analysis.decode_digits());
 	}
 
 	#[test]
@@ -425,7 +436,7 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![8, 7, 1, 7], analysis.decoded_digits());
+		assert_eq!(vec![8, 7, 1, 7], analysis.decode_digits());
 	}
 
 	#[test]
@@ -437,6 +448,6 @@ mod tests {
 
 		analysis.analyze();
 
-		assert_eq!(vec![4, 3, 1, 5], analysis.decoded_digits());
+		assert_eq!(vec![4, 3, 1, 5], analysis.decode_digits());
 	}
 }
