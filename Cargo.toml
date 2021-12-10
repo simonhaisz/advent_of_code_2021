@@ -17,4 +17,5 @@ members = [
     "day_08_puzzle_02",
     "day_09_puzzle_01",
     "day_09_puzzle_02",
+    "day_10_puzzle_01",
 ]
