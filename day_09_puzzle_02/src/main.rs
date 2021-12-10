@@ -1,16 +1,15 @@
 mod basin;
-mod height_map;
 
 use std::fs::File;
 use std::io::{BufReader, BufRead};
-use crate::height_map::HeightMap;
+use crate::basin::MapScanner;
 
 fn main() -> std::io::Result<()> {
 
     let file = File::open("./day_09_puzzle_01/input.txt")?;
     let lines = BufReader::new(file).lines();
 
-    let mut map = HeightMap::new();
+    let mut scanner = MapScanner::new();
 
     for line in lines {
         if let Ok(entry) = line {
@@ -18,12 +17,13 @@ fn main() -> std::io::Result<()> {
                 continue;
             }
             let row = entry.trim().chars().map(|c| c.to_digit(10).unwrap()).collect::<Vec<u32>>();
-            map.process_row(Some(row));
+            scanner.scan_row(row);
         }
     }
-    map.process_row(None);
 
-    println!("{}", map.risk_level_total());
+    scanner.merge_basins();
+
+    println!("{}", scanner.largest_basins_score(3));
 
     Ok(())
 }

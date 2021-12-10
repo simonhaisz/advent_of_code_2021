@@ -112,7 +112,7 @@ impl MapScanner {
 		}
 	}
 
-	fn merge_basins(&mut self) {
+	pub fn merge_basins(&mut self) {
 		let mut merged_basins = vec![];
 		'outer: for outer in 0..self.basins.len() - 1 {
 			let outer_basin = &self.basins[outer];
@@ -130,6 +130,18 @@ impl MapScanner {
 
 		self.basins = merged_basins;
 	}
+
+	pub fn largest_basins_score(&mut self, count: usize) -> usize {
+		self.basins.sort_by(|a, b| a.positions.len().partial_cmp(&b.positions.len()).unwrap());
+		self.basins.reverse();
+
+		let mut score = 1;
+		for i in 0..count {
+			let basin = &self.basins[i];
+			score *= basin.positions.len();
+		}
+		score
+	}
 }
 
 #[cfg(test)]
@@ -137,7 +149,7 @@ mod tests {
 	use super::*;
 
 	#[test]
-	fn test_demo() {
+	fn test_demo_find_basins() {
 		let mut scanner = MapScanner::new();
 
 		scanner.scan_row(vec![2, 1, 9, 9, 9, 4, 3, 2, 1, 0]);
@@ -149,5 +161,20 @@ mod tests {
 		scanner.merge_basins();
 
 		assert_eq!(4, scanner.basins.len());
+	}
+
+	#[test]
+	fn test_demo_largst_score() {
+		let mut scanner = MapScanner::new();
+
+		scanner.scan_row(vec![2, 1, 9, 9, 9, 4, 3, 2, 1, 0]);
+		scanner.scan_row(vec![3, 9, 8, 7, 8, 9, 4, 9, 2, 1]);
+		scanner.scan_row(vec![9, 8, 5, 6, 7, 8, 9, 8, 9, 2]);
+		scanner.scan_row(vec![8, 7, 6, 7, 8, 9, 6, 7, 8, 9]);
+		scanner.scan_row(vec![9, 8, 9, 9, 9, 6, 5, 6, 7, 8]);
+
+		scanner.merge_basins();
+
+		assert_eq!(1134, scanner.largest_basins_score(3));
 	}
 }
