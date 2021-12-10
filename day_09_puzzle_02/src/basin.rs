@@ -114,18 +114,28 @@ impl MapScanner {
 
 	pub fn merge_basins(&mut self) {
 		let mut merged_basins = vec![];
-		'outer: for outer in 0..self.basins.len() - 1 {
-			let outer_basin = &self.basins[outer];
-			'inner: for other_i in outer + 1..self.basins.len() {
-				let other_basin = &self.basins[other_i];
+
+		let mut consumed_indexes = vec![];
+
+		for outer in 0..self.basins.len() {
+			if consumed_indexes.contains(&outer) {
+				continue;
+			}
+			let mut outer_basin = self.basins[outer].clone();
+			consumed_indexes.push(outer);
+			for inner in 0..self.basins.len() {
+				if consumed_indexes.contains(&inner) {
+					continue;
+				}
+				let other_basin = &self.basins[inner];
 				if outer_basin.intersects(&other_basin) {
-					let mut merged_basin = outer_basin.clone();
+					consumed_indexes.push(inner);
 					let mut copy = other_basin.clone();
-					merged_basin.merge(&mut copy);
-					merged_basins.push(merged_basin);
-					continue 'outer;
+					outer_basin.merge(&mut copy);
 				}
 			}
+
+			merged_basins.push(outer_basin.clone());
 		}
 
 		self.basins = merged_basins;
@@ -159,6 +169,7 @@ mod tests {
 		scanner.scan_row(vec![9, 8, 9, 9, 9, 6, 5, 6, 7, 8]);
 
 		scanner.merge_basins();
+		scanner.merge_basins();
 
 		assert_eq!(4, scanner.basins.len());
 	}
@@ -173,6 +184,8 @@ mod tests {
 		scanner.scan_row(vec![8, 7, 6, 7, 8, 9, 6, 7, 8, 9]);
 		scanner.scan_row(vec![9, 8, 9, 9, 9, 6, 5, 6, 7, 8]);
 
+		scanner.merge_basins();
+		scanner.merge_basins();
 		scanner.merge_basins();
 
 		assert_eq!(1134, scanner.largest_basins_score(3));
