@@ -321,7 +321,7 @@ mod tests {
 	use super::*;
 
 	#[test]
-	fn test_decode() {
+	fn test_decode_1() {
 		let signal_patterns = "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb".split(" ").collect::<Vec<&str>>();
 		let digital_output = "fdgacbe cefdb cefbgd gcbe".split(" ").collect::<Vec<&str>>();
 
@@ -329,8 +329,114 @@ mod tests {
 
 		analysis.analyze();
 
-		let decoded_digits = analysis.decoded_digits();
+		assert_eq!(vec![8, 3, 9, 4], analysis.decoded_digits());
+	}
 
-		assert_eq!(vec![8, 3, 9, 4], decoded_digits);
+	#[test]
+	fn test_decode_2() {
+		let signal_patterns = "edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec".split(" ").collect::<Vec<&str>>();
+		let digital_output = "fcgedb cgb dgebacf gc".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![9, 7, 8, 1], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_3() {
+		let signal_patterns = "fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef".split(" ").collect::<Vec<&str>>();
+		let digital_output = "cg cg fdcagb cbg".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![1, 1, 9, 7], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_4() {
+		let signal_patterns = "fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega".split(" ").collect::<Vec<&str>>();
+		let digital_output = "efabcd cedba gadfec cb".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![9, 3, 6, 1], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_5() {
+		let signal_patterns = "aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga".split(" ").collect::<Vec<&str>>();
+		let digital_output = "gecf egdcabf bgf bfgea".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![4, 8, 7, 3], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_6() {
+		let signal_patterns = "fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf".split(" ").collect::<Vec<&str>>();
+		let digital_output = "gebdcfa ecba ca fadegcb".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![8, 4, 1, 8], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_7() {
+		let signal_patterns = "dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf".split(" ").collect::<Vec<&str>>();
+		let digital_output = "cefg dcbef fcge gbcadfe".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![4, 5, 4, 8], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_8() {
+		let signal_patterns = "bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd".split(" ").collect::<Vec<&str>>();
+		let digital_output = "ed bcgafe cdgba cbgef".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![1, 6, 2, 5], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_9() {
+		let signal_patterns = "egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg".split(" ").collect::<Vec<&str>>();
+		let digital_output = "gbdfcae bgc cg cgb".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![8, 7, 1, 7], analysis.decoded_digits());
+	}
+
+	#[test]
+	fn test_decode_10() {
+		let signal_patterns = "gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc".split(" ").collect::<Vec<&str>>();
+		let digital_output = "fgae cfgab fg bagce".split(" ").collect::<Vec<&str>>();
+
+		let mut analysis = FrequencyAnalysis::new(signal_patterns, digital_output);
+
+		analysis.analyze();
+
+		assert_eq!(vec![4, 3, 1, 5], analysis.decoded_digits());
 	}
 }
