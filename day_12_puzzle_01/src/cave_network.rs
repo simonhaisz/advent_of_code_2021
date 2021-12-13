@@ -42,38 +42,6 @@ impl<'input> Cave<'input> {
     }
 }
 
-pub struct CaveNetwork<'input> {
-    caves: HashMap<&'input str, CaveRef<'input>>,
-}
-
-impl <'input> CaveNetwork<'input> {
-    pub fn new() -> CaveNetwork<'input> {
-        CaveNetwork {
-            caves: HashMap::new(),
-        }
-    }
-
-    pub fn add_cave(&mut self, cave: CaveRef<'input>) {
-        self.caves.insert(cave.borrow().name, cave.clone());
-    }
-
-    // pub fn get_cave_mut(&mut self, name: &str) -> Option<&mut Cave<'input>> {
-    //     self.caves.get_mut(name)
-    // }
-
-    pub fn find_a_path(&self, start: &str, end: &str) -> Vec<CaveRef<'input>> {
-        if let Some(start) = self.caves.get(start) {
-            let mut cave_paths = vec![];
-
-
-
-            cave_paths
-        } else {
-            panic!("There is no cave with name '{}'", start);
-        }
-    }
-}
-
 fn find_paths<'input>(start: CaveRef<'input>, end: CaveRef<'input>) -> Vec<Vec<CaveRef<'input>>> {
     let mut start_to_end_paths: Vec<Vec<CaveRef<'input>>> = vec![];
 
@@ -114,12 +82,36 @@ fn write_sorted_paths<'input>(paths:&Vec<Vec<CaveRef<'input>>>) -> Vec<String> {
     paths
 }
 
+fn create_cave_network<'input>(connection_inputs: Vec<&'input str>) -> HashMap<&str, CaveRef<'input>> {
+    let mut all_caves = HashMap::new();
+
+    for connection_input in connection_inputs.iter() {
+        let mut split = connection_input.split("-");
+        let start = split.next().unwrap();
+        let end = split.next().unwrap();
+        if let Some(_) = split.next() {
+            panic!("connection inputs should only have two components (start to end) - found extra component(s) in '{}'", connection_input);
+        }
+
+        all_caves.entry(start).or_insert(Cave::new(start));
+        all_caves.entry(end).or_insert(Cave::new(end));
+
+        let start_cave = all_caves[start].clone();
+        let end_cave = all_caves[end].clone();
+
+        start_cave.borrow_mut().add_connection(end_cave.clone());
+        end_cave.borrow_mut().add_connection(start_cave.clone());
+    }
+
+    all_caves
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_demo_1() {
+    fn test_path_demo_1() {
         let cave_start = Cave::new("start");
         let cave_a = Cave::new("A");
         let cave_b = Cave::new("b");
@@ -166,6 +158,39 @@ mod tests {
         }
 
         let paths = find_paths(cave_start.clone(), cave_end.clone());
+        assert_eq!(10, paths.len());
+        assert_eq!(vec![
+            "start,A,b,A,c,A,end",
+            "start,A,b,A,end",
+            "start,A,b,end",
+            "start,A,c,A,b,A,end",
+            "start,A,c,A,b,end",
+            "start,A,c,A,end",
+            "start,A,end",
+            "start,b,A,c,A,end",
+            "start,b,A,end",
+            "start,b,end"
+            ],
+            write_sorted_paths(&paths)
+        );
+    }
+
+    #[test]
+    fn test_create_demo_1() {
+        let network = create_cave_network(vec![
+            "start-A",
+            "start-b",
+            "A-c",
+            "A-b",
+            "b-d",
+            "A-end",
+            "b-end"
+        ]);
+
+        let start_cave = network["start"].clone();
+        let end_cave = network["end"].clone();
+
+        let paths = find_paths(start_cave.clone(), end_cave.clone());
         assert_eq!(10, paths.len());
         assert_eq!(vec![
             "start,A,b,A,c,A,end",
