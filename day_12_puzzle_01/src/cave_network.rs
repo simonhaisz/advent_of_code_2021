@@ -207,4 +207,79 @@ mod tests {
             write_sorted_paths(&paths)
         );
     }
+
+    #[test]
+    fn test_create_demo_2() {
+        let network = create_cave_network(vec![
+            "dc-end",
+            "HN-start",
+            "start-kj",
+            "dc-start",
+            "dc-HN",
+            "LN-dc",
+            "HN-end",
+            "kj-sa",
+            "kj-HN",
+            "kj-dc"
+        ]);
+
+        let start_cave = network["start"].clone();
+        let end_cave = network["end"].clone();
+
+        let paths = find_paths(start_cave.clone(), end_cave.clone());
+        assert_eq!(19, paths.len());
+        assert_eq!(vec![
+            "start,HN,dc,HN,end",
+            "start,HN,dc,HN,kj,HN,end",
+            "start,HN,dc,end",
+            "start,HN,dc,kj,HN,end",
+            "start,HN,end",
+            "start,HN,kj,HN,dc,HN,end",
+            "start,HN,kj,HN,dc,end",
+            "start,HN,kj,HN,end",
+            "start,HN,kj,dc,HN,end",
+            "start,HN,kj,dc,end",
+            "start,dc,HN,end",
+            "start,dc,HN,kj,HN,end",
+            "start,dc,end",
+            "start,dc,kj,HN,end",
+            "start,kj,HN,dc,HN,end",
+            "start,kj,HN,dc,end",
+            "start,kj,HN,end",
+            "start,kj,dc,HN,end",
+            "start,kj,dc,end"
+            ],
+            write_sorted_paths(&paths)
+        );
+    }
+
+    #[test]
+    fn test_create_demo_3() {
+        let network = create_cave_network(vec![
+            "fs-end",
+            "he-DX",
+            "fs-he",
+            "start-DX",
+            "pj-DX",
+            "end-zg",
+            "zg-sl",
+            "zg-pj",
+            "pj-he",
+            "RW-he",
+            "fs-DX",
+            "pj-RW",
+            "zg-RW",
+            "start-pj",
+            "he-WI",
+            "zg-he",
+            "pj-fs",
+            "start-RW"
+        ]);
+
+        let start_cave = network["start"].clone();
+        let end_cave = network["end"].clone();
+
+        let paths = find_paths(start_cave.clone(), end_cave.clone());
+        assert_eq!(226, paths.len());
+    }
 }
