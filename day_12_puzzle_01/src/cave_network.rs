@@ -104,6 +104,16 @@ fn write_path<'input>(path: &Vec<CaveRef<'input>>) -> String {
     path.iter().map(|c| c.borrow().name).collect::<Vec<&str>>().join(",")
 }
 
+fn write_sorted_paths<'input>(paths:&Vec<Vec<CaveRef<'input>>>) -> Vec<String> {
+    let mut paths = paths
+        .iter()
+        .map(|p| write_path(p))
+        .collect::<Vec<String>>();
+    paths.sort();
+
+    paths
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -157,16 +167,19 @@ mod tests {
 
         let paths = find_paths(cave_start.clone(), cave_end.clone());
         assert_eq!(10, paths.len());
-        let mut path_iter = paths.iter();
-        assert_eq!("start,b,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,b,A,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,b,A,c,A,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,b,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,b,A,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,b,A,c,A,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,c,A,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,c,A,b,end", write_path(path_iter.next().unwrap()));
-        assert_eq!("start,A,c,A,b,A,end", write_path(path_iter.next().unwrap()));
+        assert_eq!(vec![
+            "start,A,b,A,c,A,end",
+            "start,A,b,A,end",
+            "start,A,b,end",
+            "start,A,c,A,b,A,end",
+            "start,A,c,A,b,end",
+            "start,A,c,A,end",
+            "start,A,end",
+            "start,b,A,c,A,end",
+            "start,b,A,end",
+            "start,b,end"
+            ],
+            write_sorted_paths(&paths)
+        );
     }
 }
