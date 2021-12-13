@@ -42,7 +42,7 @@ impl<'input> Cave<'input> {
     }
 }
 
-fn find_paths<'input>(start: CaveRef<'input>, end: CaveRef<'input>) -> Vec<Vec<CaveRef<'input>>> {
+pub fn find_paths<'input>(start: CaveRef<'input>, end: CaveRef<'input>) -> Vec<Vec<CaveRef<'input>>> {
     let mut start_to_end_paths: Vec<Vec<CaveRef<'input>>> = vec![];
 
     let mut cave_paths: Vec<Vec<CaveRef<'input>>> = vec![];
@@ -82,7 +82,7 @@ fn write_sorted_paths<'input>(paths:&Vec<Vec<CaveRef<'input>>>) -> Vec<String> {
     paths
 }
 
-fn create_cave_network<'input>(connection_inputs: Vec<&'input str>) -> HashMap<&str, CaveRef<'input>> {
+pub fn create_cave_network<'input>(connection_inputs: Vec<&'input str>) -> HashMap<&str, CaveRef<'input>> {
     let mut all_caves = HashMap::new();
 
     for connection_input in connection_inputs.iter() {
