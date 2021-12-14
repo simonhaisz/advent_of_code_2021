@@ -208,7 +208,9 @@ pub fn intersections_optimized(a: &Line, b: &Line) -> Vec<Point> {
     points
 }
 
-pub fn intersections_unoptimized(a: &Line, b: &Line) -> Vec<Point> {
+// Keep alternate implementation
+#[allow(dead_code)]
+fn intersections_unoptimized(a: &Line, b: &Line) -> Vec<Point> {
     let mut points = vec![];
 
     let a_points = a.points();

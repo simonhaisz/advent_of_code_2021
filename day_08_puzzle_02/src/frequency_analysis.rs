@@ -163,22 +163,6 @@ impl<'input> FrequencyAnalysis<'input> {
 		}
 	}
 
-	pub fn output_frequency(&self) {
-		println!("<character>: [positions]");
-		for (c, positions) in self.character_positions.iter() {
-			println!("{}: {}", c, positions.iter().map(|p| p.to_string()).collect::<Vec<String>>().join(", "));
-		}
-
-		println!();
-
-		println!("<position>: [characters]");
-		for (p, characters) in self.position_characters.iter() {
-			println!("{}: {}", p, characters.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", "));
-		}
-
-		println!();
-	}
-
 	fn decode_digits(&self) -> Vec<u32> {
 		let mut decoded_digits = vec![];
 		for encoded_digit in self.digital_output.iter() {
@@ -234,24 +218,6 @@ fn compute_position_counts(digits: &Vec<&Digit>) -> HashMap<u32, u32> {
 	position_counts
 }
 
-fn filter_to_unique_positions(position_counts: &HashMap<u32, u32>) -> Vec<(u32, u32)> {
-	let mut unique_positions = vec![];
-
-	'outer: for (position, count) in position_counts.iter() {
-		'inner: for (other_position, other_count) in position_counts.iter() {
-			if position == other_position {
-				continue 'inner;
-			}
-			if count == other_count {
-				continue 'outer;
-			}
-		}
-		unique_positions.push((*position, *count));
-	}
-
-	unique_positions
-}
-
 fn compute_character_counts(signals: Vec<&str>) -> HashMap<char, u32> {
 	let mut character_counts = HashMap::new();
 
@@ -263,24 +229,6 @@ fn compute_character_counts(signals: Vec<&str>) -> HashMap<char, u32> {
 	}
 
 	character_counts
-}
-
-fn filter_to_uqniue_characters(character_counts: &HashMap<char, u32>) -> Vec<(char, u32)> {
-	let mut unique_characters = vec![];
-
-	'outer: for (character, count) in character_counts.iter() {
-		'inner: for (other_character, other_count) in character_counts.iter() {
-			if character == other_character {
-				continue 'inner;
-			}
-			if count == other_count {
-				continue 'outer;
-			}
-		}
-		unique_characters.push((*character, *count));
-	}
-
-	unique_characters
 }
 
 lazy_static! {

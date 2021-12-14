@@ -170,7 +170,8 @@ impl Line {
     }
 }
 
-pub fn intersections_optimized(a: &Line, b: &Line) -> Vec<Point> {
+#[allow(dead_code)]
+fn intersections_optimized(a: &Line, b: &Line) -> Vec<Point> {
     if !a.valid() || !b.valid() {
         panic!("Expected lines to be either horizontal, vertical, or diagonal in order to determine intersections\nline a:{:?}\nline b:{:?}", a, b);
     }
@@ -368,7 +369,9 @@ pub fn intersections_specialized(a: &Line, b: &Line) -> Vec<Point> {
     points
 }
 
-pub fn intersections_unoptimized(a: &Line, b: &Line) -> Vec<Point> {
+// Keep alternate implementation
+#[allow(dead_code)]
+fn intersections_unoptimized(a: &Line, b: &Line) -> Vec<Point> {
     if !a.valid() || !b.valid() {
         panic!("Expected lines to be either horizontal, vertical, or diagonal in order to determine intersections\nline a:{:?}\nline b:{:?}", a, b);
     }

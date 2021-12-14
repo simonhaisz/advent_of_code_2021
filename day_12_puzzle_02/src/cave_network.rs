@@ -80,16 +80,6 @@ fn write_path<'input>(path: &Vec<CaveRef<'input>>) -> String {
     path.iter().map(|c| c.borrow().name).collect::<Vec<&str>>().join(",")
 }
 
-fn write_sorted_paths<'input>(paths:&Vec<Vec<CaveRef<'input>>>) -> Vec<String> {
-    let mut paths = paths
-        .iter()
-        .map(|p| write_path(p))
-        .collect::<Vec<String>>();
-    paths.sort();
-
-    paths
-}
-
 pub fn create_cave_network<'input>(connection_inputs: Vec<&'input str>) -> HashMap<&str, CaveRef<'input>> {
     let mut all_caves = HashMap::new();
 

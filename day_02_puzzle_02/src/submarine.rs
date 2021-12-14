@@ -22,10 +22,6 @@ impl Submarine {
 		self.depth
 	}
 
-	pub fn aim(&self) -> i32 {
-		self.aim
-	}
-
 	fn forward(&mut self, value: i32) {
 		self.horizontal_position += value;
 		self.depth += self.aim * value;
@@ -78,9 +74,9 @@ mod tests {
 	fn test_defaults() {
 		let sub = Submarine::new();
 
-		assert_eq!(0, sub.depth());
-		assert_eq!(0, sub.horizontal_position());
-		assert_eq!(0, sub.aim());
+		assert_eq!(0, sub.depth);
+		assert_eq!(0, sub.horizontal_position);
+		assert_eq!(0, sub.aim);
 	}
 
 	#[test]
@@ -90,9 +86,9 @@ mod tests {
 		sub.forward(5);
 		sub.forward(2);
 
-		assert_eq!(17, sub.horizontal_position());
-		assert_eq!(0, sub.depth());
-		assert_eq!(0, sub.aim());
+		assert_eq!(17, sub.horizontal_position);
+		assert_eq!(0, sub.depth);
+		assert_eq!(0, sub.aim);
 	}
 
 	#[test]
@@ -101,9 +97,9 @@ mod tests {
 		sub.down(5);
 		sub.down(2);
 
-		assert_eq!(0, sub.depth());
-		assert_eq!(0, sub.horizontal_position());
-		assert_eq!(7, sub.aim());
+		assert_eq!(0, sub.depth);
+		assert_eq!(0, sub.horizontal_position);
+		assert_eq!(7, sub.aim);
 	}
 
 	#[test]
@@ -112,9 +108,9 @@ mod tests {
 		sub.up(20);
 		sub.up(1);
 
-		assert_eq!(0, sub.depth());
-		assert_eq!(0, sub.horizontal_position());
-		assert_eq!(-21, sub.aim());
+		assert_eq!(0, sub.depth);
+		assert_eq!(0, sub.horizontal_position);
+		assert_eq!(-21, sub.aim);
 	}
 
 	#[test]
@@ -143,8 +139,8 @@ mod tests {
 		sub.up(5);
 		sub.forward(5);
 
-		assert_eq!(45, sub.depth());
-		assert_eq!(7, sub.horizontal_position());
-		assert_eq!(5, sub.aim());
+		assert_eq!(45, sub.depth);
+		assert_eq!(7, sub.horizontal_position);
+		assert_eq!(5, sub.aim);
 	}
 }

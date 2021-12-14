@@ -10,21 +10,6 @@ pub fn parse_numbers(input: &str) -> Vec<i32> {
     numbers
 }
 
-fn median(numbers: &Vec<i32>) -> i32 {
-    let midpoint = (numbers.len() as f64 / 2.0).trunc() as usize - 1;
-    if numbers.len() % 2 == 0 {
-        // even
-        let midpoint_a = midpoint;
-        let midpoint_b = midpoint_a + 1;
-        let a = numbers[midpoint_a];
-        let b = numbers[midpoint_b];
-        ((a + b) as f64 / 2.0).round() as i32
-    } else {
-        // odd
-        numbers[midpoint + 1]
-    }
-}
-
 fn fuel_cost(offset: i32) -> i32 {
     // each point of offset costs its value in fuel
     // eg. offset 3 > 1 + 2 + 3 = 6 fuel
@@ -66,17 +51,6 @@ mod tests {
     fn test_parse() {
         let numbers = parse_numbers("12,6,87,4,2,99,37,4,185");
         assert_eq!(vec![2,4,4,6,12,37,87,99,185], numbers);
-    }
-
-    #[test]
-    fn test_midpoint() {
-        // odd
-        let numbers = vec![2,4,4,6,12,37,87,99,185];
-        assert_eq!(12, median(&numbers));
-
-        // even
-        let numbers = vec![2,4,4,6,12,37,87,99,185,1337];
-        assert_eq!(25, median(&numbers));
     }
 
     #[test]

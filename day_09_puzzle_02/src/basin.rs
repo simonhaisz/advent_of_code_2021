@@ -57,10 +57,6 @@ impl Basin {
 	fn add(&mut self, position: Position) {
 		self.positions.push(position);
 	}
-
-	pub fn len(&self) -> usize {
-		self.positions.len()
-	}
 }
 
 pub struct MapScanner {

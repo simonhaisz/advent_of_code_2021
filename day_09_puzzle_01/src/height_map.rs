@@ -1,18 +1,5 @@
 pub struct LowPoint {
-	column: usize,
-	row: usize,
-	value: u32,
 	risk_level: u32,
-}
-
-impl LowPoint {
-	pub fn value(&self) -> u32 {
-		self.value
-	}
-
-	pub fn risk_level(&self) -> u32 {
-		self.risk_level
-	}
 }
 
 pub struct HeightMap {
@@ -66,7 +53,6 @@ impl HeightMap {
 		} else {
 			let size = self.size.unwrap();
 			let current_row = self.current_row.as_ref().unwrap();
-			let current_row_index = self.current_row_index.unwrap();
 			for column in 0..size {
 				let value = current_row[column];
 				if column > 0 {
@@ -93,7 +79,7 @@ impl HeightMap {
 						continue;
 					}
 				}
-				self.low_points.push(LowPoint { column, row: current_row_index, value, risk_level: value + 1 });
+				self.low_points.push(LowPoint { risk_level: value + 1 });
 			}
 
 			if self.next_row.is_none() {
@@ -122,7 +108,7 @@ mod tests {
 		map.process_row(Some(vec![9, 8, 9, 9, 9, 6, 5, 6, 7, 8]));
 		map.process_row(None);
 
-		let lowest_point_values = map.low_points.iter().map(|lp| lp.value).collect::<Vec<u32>>();
-		assert_eq!(vec![1, 0, 5, 5], lowest_point_values);
+		let lowest_point_values = map.low_points.iter().map(|lp| lp.risk_level).collect::<Vec<u32>>();
+		assert_eq!(vec![2, 1, 6, 6], lowest_point_values);
 	}
 }
