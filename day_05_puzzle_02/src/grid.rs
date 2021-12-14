@@ -46,9 +46,6 @@ impl Grid {
 
 #[cfg(test)]
 mod tests {
-    use std::fs::File;
-    use std::io::{BufReader, BufRead};
-
     use super::*;
 
     #[test]
@@ -125,28 +122,4 @@ mod tests {
         assert_eq!(true, overlaps.contains(&Point::new(2, 9)));
         assert_eq!(true, overlaps.contains(&Point::new(2, 9)));
     }
-/*
-    #[test]
-    fn test_sample() {
-        let file = File::open("../day_05_puzzle_01/input.txt").unwrap();
-        let lines = BufReader::new(file).lines();
-
-        let mut grid = Grid::new();
-        for line in lines {
-            if let Ok(entry) = line {
-                if entry.trim().len() == 0 {
-                    // skip any rows with no content
-                    continue;
-                }
-                let l = Line::from(entry.trim());
-                if l.horizontal() || l.vertical() {
-                    grid.add_line(l);
-                }
-            }
-        }
-
-        let overlaps = grid.overlaps();
-        assert_eq!(4728, overlaps.len());
-    }
-    */
 }
