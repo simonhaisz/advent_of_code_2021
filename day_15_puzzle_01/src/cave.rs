@@ -84,6 +84,46 @@ impl Cave {
 
 		safest_path.unwrap()
 	}
+
+	pub fn find_safest_path_recursive(&self) -> Option<Path> {
+		let mut paths = vec![];
+		find_path_recursive(&self, &mut paths, Path::new());
+		if paths.len() > 0 {
+			Some(paths.remove(0))
+		} else {
+			None
+		}
+	}
+}
+
+fn find_path_recursive(cave: &Cave, mut complete_paths: &mut Vec<Path>, current_path: Path) {
+	let current_position = current_path.positions.last().unwrap();
+	if current_position.at_end(&cave) {
+		// println!("Found a path to the end with {} steps and {} risk", current_path.positions.len(), current_path.risk);
+
+		for p in complete_paths.iter() {
+			if current_path.risk >= p.risk {
+				return;
+			}
+		}
+		println!("Including a path to the end with {} steps and {} risk", current_path.positions.len(), current_path.risk);
+		complete_paths.clear();
+		complete_paths.insert(0, current_path);
+	} else {
+		'moves: for next_move in current_position.valid_moves(&cave).into_iter() {
+			let next_position = next_move.next_position(&current_position);
+			let new_risk = cave.risk_levels[next_position.1][next_position.0];
+			let mut new_path = current_path.clone();
+			if new_path.add(new_risk, next_position) {
+				for p in complete_paths.iter() {
+					if new_path.risk >= p.risk {
+						continue 'moves;
+					}
+				}
+				find_path_recursive(&cave, &mut complete_paths, new_path);
+			}
+		}
+	}
 }
 
 type Position = (usize, usize);
@@ -97,15 +137,15 @@ impl PositionInCave for Position {
 
 	fn valid_moves(&self, cave: &Cave) -> Vec<Move> {
 		let mut moves = vec![];
-		if self.0 > 0 {
-			moves.push(Move::Left);
-		}
+		// if self.0 > 0 {
+		// 	moves.push(Move::Left);
+		// }
 		if self.0 < cave.width - 1 {
 			moves.push(Move::Right);
 		}
-		if self.1 > 0 {
-			moves.push(Move::Down);
-		}
+		// if self.1 > 0 {
+		// 	moves.push(Move::Down);
+		// }
 		if self.1 < cave.height - 1 {
 			moves.push(Move::Up);
 		}
@@ -138,14 +178,14 @@ impl Move {
 #[derive(Clone)]
 pub struct Path {
 	risk: u32,
-	positions: Vec<Position>,
+	positions: Box<Vec<Position>>,
 }
 
 impl Path {
 	pub fn new() -> Path {
 		Path {
 			risk: 0,
-			positions: vec![(0, 0)],
+			positions: Box::new(vec![(0, 0)]),
 		}
 	}
 
@@ -195,7 +235,7 @@ mod tests {
 
 		let cave = builder.build();
 
-		let path = cave.find_safest_path();
+		let path = cave.find_safest_path_recursive().unwrap();
 
 		assert_eq!(40, path.risk);
 	}

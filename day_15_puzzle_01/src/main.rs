@@ -25,7 +25,7 @@ fn main() -> std::io::Result<()> {
 
     let cave = builder.build();
 
-    let safest_path = cave.find_safest_path();
+    let safest_path = cave.find_safest_path_recursive().unwrap();
 
     println!("{}", safest_path.risk());
 
