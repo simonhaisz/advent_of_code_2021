@@ -2,7 +2,7 @@ mod polymer;
 
 use std::fs::File;
 use std::io::{BufReader, BufRead};
-use crate::polymer::PairInsertionRule;
+use crate::polymer::{PolymerCounts, PairInsertionRule};
 
 fn main() -> std::io::Result<()> {
     let file = File::open("./day_14_puzzle_01/input.txt")?;
@@ -26,14 +26,14 @@ fn main() -> std::io::Result<()> {
 
     let rules: Vec<PairInsertionRule> = rules.iter().map(|r| PairInsertionRule::from(r)).collect();
 
-    let template = template.unwrap();
-    let mut polymer = polymer::counts_from_polymer(&template);
+    let template = &template.unwrap();
+    let mut polymer = PolymerCounts::from(template);
 
     for _ in 1..=10 {
-        polymer = polymer::polymerization_counts(polymer, &rules);
+        polymer = polymer.apply(&rules);
     }
 
-    let score = polymer::score_polymer(&polymer);
+    let score = polymer.score();
 
     println!("{}", score);
 
