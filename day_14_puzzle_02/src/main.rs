@@ -29,7 +29,7 @@ fn main() -> std::io::Result<()> {
     let template = &template.unwrap();
     let mut polymer = PolymerCounts::from(template);
 
-    for _ in 1..=10 {
+    for _ in 1..=40 {
         polymer = polymer.apply(&rules);
     }
 

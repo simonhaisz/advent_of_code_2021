@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::cmp;
+use std::fmt::{self, Display};
 
 pub struct PairInsertionRule {
     pair: String,
@@ -40,18 +41,19 @@ impl PairInsertionRule {
     }
 }
 
-pub struct PolymerCounts<'input> {
-    pair_counts: HashMap<&'input str, u64>,
+#[derive(PartialEq, Debug)]
+pub struct PolymerCounts {
+    pair_counts: HashMap<String, u64>,
     element_counts: HashMap<char, u64>,
 }
 
-impl<'input> PolymerCounts<'input> {
-    pub fn from(input: &'input str) -> PolymerCounts<'input> {
+impl PolymerCounts {
+    pub fn from(input: &str) -> PolymerCounts {
         let mut pair_counts = HashMap::new();
         let mut element_counts = HashMap::new();
 
         for i in 0..input.chars().count() - 1 {
-            let pair = &input[i..i+2];
+            let pair = String::from(&input[i..i+2]);
             let count = pair_counts.entry(pair).or_insert(0);
             *count += 1;
         }
@@ -67,17 +69,27 @@ impl<'input> PolymerCounts<'input> {
         }
     }
 
-    pub fn apply(mut self, rules: &Vec<PairInsertionRule>) -> PolymerCounts<'input> {
+    pub fn apply(self, rules: &Vec<PairInsertionRule>) -> PolymerCounts {
         let mut new_pair_counts = HashMap::new();
         let mut new_element_counts = self.element_counts.clone();
 
-        for rule in rules.iter() {
-            if let Some(count) = self.pair_counts.get_mut(rule.pair.as_str()) {
-                for insert in rule.split() {
-                    new_pair_counts.insert(insert.as_str(), *count);
+        for (pair, count) in self.pair_counts.into_iter() {
+            let mut split_pair = false;
+            for rule in rules.iter() {
+                if pair == rule.pair {
+                    split_pair = true;
+                    for insert in rule.split() {
+                        let pair_count = new_pair_counts.entry(insert).or_insert(0);
+                        *pair_count += count;
+                    }
+                    let element_count = new_element_counts.entry(rule.element).or_insert(0);
+                    *element_count += count;
                 }
-                let count = new_element_counts.entry(rule.element).or_insert(0);
-                *count + 1;
+            }
+            // no matching rule found, stays as-is
+            if !split_pair {
+                let pair_count = new_pair_counts.entry(pair).or_insert(0);
+                *pair_count += count;
             }
         }
 
@@ -99,11 +111,34 @@ impl<'input> PolymerCounts<'input> {
         max - min 
     }
 
-    pub fn count(&self, pair: &str) -> Option<u64> {
+    pub fn count(&self, pair: String) -> Option<u64> {
         match self.pair_counts.get(&pair) {
             Some(v) => Some(*v),
             None => None
         }
+    }
+}
+
+impl Display for PolymerCounts {
+    
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
+        let mut pairs: Vec<&String> = self.pair_counts.keys().collect();
+        pairs.sort();
+
+        writeln!(f, "Pair Counts:");
+        for &pair in pairs.iter() {
+            writeln!(f, "\t{}={}", pair, self.pair_counts.get(pair).unwrap());
+        }
+
+        let mut elements: Vec<&char> = self.element_counts.keys().collect();
+        elements.sort();
+
+        writeln!(f, "Element Counts:");
+        for &element in elements.iter() {
+            writeln!(f, "\t{}={}", element, self.element_counts.get(element).unwrap());
+        }
+
+        Ok(())
     }
 }
 
@@ -114,13 +149,13 @@ mod tests {
     #[test]
     fn test_counts_from_polymer() {
         let counts = PolymerCounts::from("NNCB");
-        assert_eq!(1, counts.count("NN"));
-        assert_eq!(1, counts.count("NC"));
-        assert_eq!(1, counts.count("CB"));
+        assert_eq!(Some(1), counts.count("NN".to_string()));
+        assert_eq!(Some(1), counts.count("NC".to_string()));
+        assert_eq!(Some(1), counts.count("CB".to_string()));
     }
-
+    
     #[test]
-    fn test_demo() {
+    fn test_demo_1() {
         let rules: Vec<PairInsertionRule> = "
 CH -> B
 HH -> N
@@ -143,7 +178,44 @@ CN -> C"
         .map(|s| PairInsertionRule::from(s))
         .collect();
 
-        let polymer_counts = PolymerCounts::from("NNCB");
+        let mut polymer_counts = PolymerCounts::from("NNCB");
+
+        for _ in 0..10 {
+            polymer_counts = polymer_counts.apply(&rules);
+        }
+
+        assert_eq!(1588, polymer_counts.score());
+    }
+
+    #[test]
+    fn test_demo_2() {
+        let rules: Vec<PairInsertionRule> = "
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C"
+        .split("\n")
+        .filter(|s| !s.is_empty())
+        .map(|s| PairInsertionRule::from(s))
+        .collect();
+
+        let mut polymer_counts = PolymerCounts::from("NNCB");
+
+        for _ in 0..40 {
+            polymer_counts = polymer_counts.apply(&rules);
+        }
 
         assert_eq!(2188189693529, polymer_counts.score());
     }
