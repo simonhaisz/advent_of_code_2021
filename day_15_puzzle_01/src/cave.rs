@@ -1,5 +1,3 @@
-use std::cmp;
-
 pub struct CaveBuilder {
 	width: Option<usize>,
 	risk_levels: Vec<Vec<u32>>,
