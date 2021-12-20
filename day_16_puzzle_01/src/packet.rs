@@ -4,32 +4,63 @@ pub enum Packet {
     Operator(Box<OperatorPacket>),
 }
 
+impl Packet {
+    pub fn version_total(&self) -> u64 {
+        match self {
+            Packet::Literal(d) => d.version(),
+            Packet::Operator(d) => {
+                let mut sub_total = d.version();
+                for sub in d.sub_packets().iter() {
+                    sub_total += sub.version_total();
+                }
+                sub_total
+            }
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub struct LiteralPacket {
-    version: u32,
-    value: u32,
+    version: u64,
+    value: u64,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct OperatorPacket {
-    version: u32,
+    version: u64,
     sub_packets: Vec<Packet>,
 }
 
 impl LiteralPacket {
-    pub fn new(version: u32, value: u32) -> LiteralPacket {
+    pub fn new(version: u64, value: u64) -> LiteralPacket {
         LiteralPacket {
             version,
             value,
         }
     }
+
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl OperatorPacket {
-    pub fn new(version: u32, sub_packets: Vec<Packet>) -> OperatorPacket {
+    pub fn new(version: u64, sub_packets: Vec<Packet>) -> OperatorPacket {
         OperatorPacket {
             version,
             sub_packets,
         }
+    }
+
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    pub fn sub_packets(&self) -> &Vec<Packet> {
+        &self.sub_packets
     }
 }

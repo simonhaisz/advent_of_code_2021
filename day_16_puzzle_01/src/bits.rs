@@ -1,15 +1,4 @@
-use crate::hex;
 use crate::packet::{Packet, LiteralPacket, OperatorPacket};
-
-fn convert_to_binary(hex_value: &str) -> String {
-	let mut binary_value = String::new();
-
-	for hex_code in hex_value.chars() {
-		binary_value.push_str(hex::convert_to_binary(hex_code));
-	}
-
-	binary_value
-}
 
 pub fn extract_packet(packet: &str) -> (Packet, u32) {
 	let id = get_id(&packet);
@@ -38,7 +27,7 @@ fn extract_operator_packet(packet: &str) -> (OperatorPacket, u32) {
 
 }
 
-fn get_version(packet: &str) -> u32 {
+fn get_version(packet: &str) -> u64 {
 	if packet.len() < 3 {
 		panic!("packet is too small - found size {}", packet.len())
 	}
@@ -46,7 +35,7 @@ fn get_version(packet: &str) -> u32 {
 	convert_to_integer(&packet[..3])
 }
 
-fn get_id(packet: &str) -> u32 {
+fn get_id(packet: &str) -> u64 {
 	if packet.len() < 6 {
 		panic!("packet is too small - found size {}", packet.len())
 	}
@@ -54,7 +43,7 @@ fn get_id(packet: &str) -> u32 {
 	convert_to_integer(&packet[3..6])
 }
 
-fn get_literal_value(packet: &str) -> (u32, u32) {
+fn get_literal_value(packet: &str) -> (u64, u32) {
 	let id = get_id(&packet);
 	if id != TYPE_LITERAL_VALUE {
 		panic!("Expect type {} for literal value - found {}", TYPE_LITERAL_VALUE, id)
@@ -86,7 +75,7 @@ fn get_sub_packets(packet: &str) -> (Vec<Packet>, u32) {
 
 	let length_type_id = convert_to_integer(&packet[6..7]);
 	if length_type_id == LENGTH_TYPE_PACKETS_SIZE {
-		let sub_packets_bit_length = convert_to_integer(&packet[7..22]);
+		let sub_packets_bit_length = convert_to_integer(&packet[7..22]) as u32;
 		let mut sub_packets = vec![];
 		let mut total_bits_read = 0;
 		let mut index = 22;
@@ -117,28 +106,20 @@ fn get_sub_packets(packet: &str) -> (Vec<Packet>, u32) {
 	}
 }
 
-fn convert_to_integer(binary_value: &str) -> u32 {
-	u32::from_str_radix(&binary_value, 2).unwrap()
+fn convert_to_integer(binary_value: &str) -> u64 {
+	u64::from_str_radix(&binary_value, 2).unwrap()
 }
 
-const TYPE_LITERAL_VALUE: u32 = 4;
+const TYPE_LITERAL_VALUE: u64 = 4;
 
-const LENGTH_TYPE_PACKETS_SIZE: u32 = 0;
+const LENGTH_TYPE_PACKETS_SIZE: u64 = 0;
 
-const LENGTH_TYPE_PACKETS_COUNT: u32 = 1;
+const LENGTH_TYPE_PACKETS_COUNT: u64 = 1;
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-
-	#[test]
-	fn test_convert() {
-		assert_eq!("110100101111111000101000", convert_to_binary(&"D2FE28").as_str());
-
-		assert_eq!("00111000000000000110111101000101001010010001001000000000", convert_to_binary(&"38006F45291200").as_str());
-
-		assert_eq!("11101110000000001101010000001100100000100011000001100000", convert_to_binary(&"EE00D40C823060").as_str());
-	}
+	use crate::hex;
 
 	#[test]
 	fn test_convert_to_integer() {
@@ -205,5 +186,33 @@ mod tests {
 			Packet::Literal(Box::new(LiteralPacket::new(1, 3))),
 			sub_packets[2]
 		);
+	}
+
+	#[test]
+	fn test_example_1() {
+		let binary_data = hex::convert_hex_value_to_binary("8A004A801A8002F478");
+		let (packet, _) = extract_packet(&binary_data);
+		assert_eq!(16, packet.version_total());
+	}
+
+	#[test]
+	fn test_example_2() {
+		let binary_data = hex::convert_hex_value_to_binary("620080001611562C8802118E34");
+		let (packet, _) = extract_packet(&binary_data);
+		assert_eq!(12, packet.version_total());
+	}
+
+	#[test]
+	fn test_example_3() {
+		let binary_data = hex::convert_hex_value_to_binary("C0015000016115A2E0802F182340");
+		let (packet, _) = extract_packet(&binary_data);
+		assert_eq!(23, packet.version_total());
+	}
+
+	#[test]
+	fn test_example_4() {
+		let binary_data = hex::convert_hex_value_to_binary("A0016C880162017C3686B18A3D4780");
+		let (packet, _) = extract_packet(&binary_data);
+		assert_eq!(31, packet.version_total());
 	}
 }
