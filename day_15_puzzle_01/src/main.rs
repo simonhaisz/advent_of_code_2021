@@ -1,4 +1,5 @@
 mod cave;
+mod path_finder;
 
 use std::fs::File;
 use std::io::{BufReader, BufRead};
@@ -25,9 +26,14 @@ fn main() -> std::io::Result<()> {
 
     let cave = builder.build();
 
-    let safest_path = cave.find_safest_path_recursive().unwrap();
+    let safest_path = path_finder::find_safest_path(&cave, cave.start(), cave.end());
 
-    println!("{}", safest_path.risk());
+    let total_risk: u32 = safest_path
+        .iter()
+        .map(|p| if *p == cave.start() { 0 } else { p.risk() })
+        .sum();
+
+    println!("{}", total_risk);
 
     Ok(())
 }
