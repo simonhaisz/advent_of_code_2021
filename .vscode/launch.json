@@ -545,6 +545,25 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug unit tests in executable 'day_15_puzzle_02'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=day_15_puzzle_02",
+                    "--package=day_15_puzzle_02"
+                ],
+                "filter": {
+                    "name": "day_15_puzzle_02",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug executable 'day_15_puzzle_01'",
             "cargo": {
                 "args": [
