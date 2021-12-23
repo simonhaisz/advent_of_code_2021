@@ -42,10 +42,6 @@ impl LiteralPacket {
     pub fn version(&self) -> u64 {
         self.version
     }
-
-    pub fn value(&self) -> u64 {
-        self.value
-    }
 }
 
 impl OperatorPacket {

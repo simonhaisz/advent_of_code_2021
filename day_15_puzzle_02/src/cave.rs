@@ -25,10 +25,6 @@ impl CaveBuilder {
 		self.source_risk_levels.push(row);
 	}
 
-	pub fn build(self) -> Cave {
-		Cave::new(self.source_risk_levels)
-	}
-
 	pub fn build_full(self) -> Cave {
 		let mut full_cave = vec![];
 		let source_height = self.source_risk_levels.len();
@@ -147,6 +143,12 @@ impl Position {
 #[cfg(test)]
 mod tests {
 	use super::*;
+
+	impl CaveBuilder {
+		pub fn build(self) -> Cave {
+			Cave::new(self.source_risk_levels)
+		}
+	}
 
 	#[test]
 	fn test_build_full() {

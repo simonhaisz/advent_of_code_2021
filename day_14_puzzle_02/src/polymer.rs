@@ -111,12 +111,7 @@ impl PolymerCounts {
         max - min 
     }
 
-    pub fn count(&self, pair: String) -> Option<u64> {
-        match self.pair_counts.get(&pair) {
-            Some(v) => Some(*v),
-            None => None
-        }
-    }
+    
 }
 
 impl Display for PolymerCounts {
@@ -145,6 +140,15 @@ impl Display for PolymerCounts {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    impl PolymerCounts {
+        pub fn count(&self, pair: String) -> Option<u64> {
+            match self.pair_counts.get(&pair) {
+                Some(v) => Some(*v),
+                None => None
+            }
+        }
+    }
 
     #[test]
     fn test_counts_from_polymer() {

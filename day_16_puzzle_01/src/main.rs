@@ -3,7 +3,6 @@ mod hex;
 mod packet;
 
 use std::fs;
-use crate::packet::Packet;
 
 fn main() -> std::io::Result<()> {
     let hex_data = fs::read_to_string("./day_16_puzzle_01/input.txt").unwrap();

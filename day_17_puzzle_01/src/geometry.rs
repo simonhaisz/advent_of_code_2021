@@ -68,12 +68,6 @@ impl Rectangle {
         }
     }
 
-    pub fn short(&self, pos: &Position) -> bool {
-        (pos.x < self.top_left.x && pos.y > self.top_left.y) ||
-        (pos.x < self.top_left.x && pos.y >= self.bottom_left.y) ||
-        (pos.y > self.top_right.y && pos.x <= self.top_right.x)
-    }
-
     pub fn within(&self, pos: &Position) -> bool {
         pos.x >= self.top_left.x &&
         pos.x <= self.bottom_right.x &&
@@ -98,6 +92,14 @@ impl Rectangle {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    impl Rectangle {
+        pub fn short(&self, pos: &Position) -> bool {
+            (pos.x < self.top_left.x && pos.y > self.top_left.y) ||
+            (pos.x < self.top_left.x && pos.y >= self.bottom_left.y) ||
+            (pos.y > self.top_right.y && pos.x <= self.top_right.x)
+        }
+    }
 
     #[test]
     fn test_within() {

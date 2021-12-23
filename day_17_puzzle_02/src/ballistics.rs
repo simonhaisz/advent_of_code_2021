@@ -26,22 +26,6 @@ impl Vector {
         let next_velocity_y = self.velocity_y - 1;
         Vector::new(next_pos, next_velocity_x, next_velocity_y)
     }
-
-    pub fn v_x(&self) -> i32 {
-        self.velocity_x
-    }
-
-    pub fn v_y(&self) -> i32 {
-        self.velocity_y
-    }
-
-    pub fn p_x(&self) -> i32 {
-        self.pos.x()
-    }
-
-    pub fn p_y(&self) -> i32 {
-        self.pos.y()
-    }
 }
 
 fn find_valid_horizontal_velocities(distance_range: (i32, i32)) -> Vec<(i32, i32, i32)> {
@@ -68,25 +52,6 @@ fn find_valid_horizontal_velocities(distance_range: (i32, i32)) -> Vec<(i32, i32
     }
 
     hits
-}
-
-fn find_valid_vertical_velocities(distance_range: (i32, i32), starting_steps: i32) -> HashMap<i32, Vec<i32>> {
-    if distance_range.0 <= distance_range.1 {
-        panic!("Distance range should go from closest to furthest and they should not equal - found ({}, {})", distance_range.0, distance_range.1)
-    }
-
-    let mut step_velocities = HashMap::new();
-
-    // if the projectile can be within the target area as its x velocity drops to zero then there is no step limit
-    // just a limit on the y velocity becoming so negative that it passes through the target area without 'stopping' in it
-    // and since the origin is 0,0 and the parabolic arc is perfect (in integer-land anyways) it is guarenteed to hit 0 again
-    // where it's speed will be one higher than it's initial speed
-    let max_velocity = distance_range.1.abs() - 1;
-    for i in 0.. {
-        let v = max_velocity - i;
-    }
-
-    step_velocities
 }
 
 fn find_hit_vertical_velocities(distance_range: (i32, i32), steps: i32) -> Vec<i32> {

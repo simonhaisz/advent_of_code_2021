@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
-use crate::cave::{Cave, CaveBuilder, Position};
+use crate::cave::{Cave, Position};
 
 pub fn find_safest_path<'input>(cave: &'input Cave, start: &'input Position, end: &'input Position) -> Vec<&'input Position> {
     let mut frontier = BinaryHeap::new();
@@ -79,6 +79,7 @@ impl<'input> PartialOrd for PriorityPos<'input> {
 #[cfg(test)]
 mod tests {
 	use super::*;
+    use crate::cave::{CaveBuilder};
 
 	#[test]
 	fn test_demo() {

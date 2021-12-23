@@ -24,18 +24,6 @@ impl Vector {
         Vector::new(next_pos, next_velocity_x, next_velocity_y)
     }
 
-    pub fn v_x(&self) -> i32 {
-        self.velocity_x
-    }
-
-    pub fn v_y(&self) -> i32 {
-        self.velocity_y
-    }
-
-    pub fn p_x(&self) -> i32 {
-        self.pos.x()
-    }
-
     pub fn p_y(&self) -> i32 {
         self.pos.y()
     }
