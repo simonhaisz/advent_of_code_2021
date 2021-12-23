@@ -615,6 +615,24 @@
             },
             "args": [],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day_17_puzzle_02'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day_17_puzzle_02",
+                    "--package=day_17_puzzle_02"
+                ],
+                "filter": {
+                    "name": "day_17_puzzle_02",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

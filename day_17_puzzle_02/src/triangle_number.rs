@@ -5,6 +5,6 @@ pub trait TriangleNumber {
 impl TriangleNumber for i32 {
     
     fn triangle_number(&self) -> i32 {
-        self * (self + 1) / 2
+        self * (self.abs() + 1) / 2
     }
 }

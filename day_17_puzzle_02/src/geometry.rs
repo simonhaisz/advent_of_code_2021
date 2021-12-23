@@ -1,6 +1,6 @@
 use regex::Regex;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Position {
     x: i32,
     y: i32,
