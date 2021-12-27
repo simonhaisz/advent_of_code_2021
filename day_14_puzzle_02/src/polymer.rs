@@ -120,17 +120,17 @@ impl Display for PolymerCounts {
         let mut pairs: Vec<&String> = self.pair_counts.keys().collect();
         pairs.sort();
 
-        writeln!(f, "Pair Counts:");
+        writeln!(f, "Pair Counts:")?;
         for &pair in pairs.iter() {
-            writeln!(f, "\t{}={}", pair, self.pair_counts.get(pair).unwrap());
+            writeln!(f, "\t{}={}", pair, self.pair_counts.get(pair).unwrap())?;
         }
 
         let mut elements: Vec<&char> = self.element_counts.keys().collect();
         elements.sort();
 
-        writeln!(f, "Element Counts:");
+        writeln!(f, "Element Counts:")?;
         for &element in elements.iter() {
-            writeln!(f, "\t{}={}", element, self.element_counts.get(element).unwrap());
+            writeln!(f, "\t{}={}", element, self.element_counts.get(element).unwrap())?;
         }
 
         Ok(())
