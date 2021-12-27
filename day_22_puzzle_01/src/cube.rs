@@ -1,3 +1,4 @@
+use std::cmp;
 use crate::range::{self, CubeRange};
 
 #[derive(Debug, PartialEq)]
@@ -12,6 +13,16 @@ const THREE_D_OTHER_D: [[usize; 2]; 3] = [
     [0, 2],
     [1, 0],
 ];
+
+fn apply_area_limit(r: &CubeRange) -> Option<CubeRange> {
+    if *r.start() > 50 || *r.end() < -50 {
+        None
+    } else {
+        Some(
+            cmp::max(*r.start(), -50)..=cmp::min(*r.end(), 50)
+        )
+    }
+}
 
 impl Cuboid {
     pub fn new(x: CubeRange, y: CubeRange, z: CubeRange) -> Cuboid {
@@ -34,7 +45,21 @@ impl Cuboid {
     }
 
     pub fn area(&self) -> i64 {
-        self.ranges.iter().map(|r| (r.end() - r.start() + 1) as i64).product()
+        let limited_area_ranges = self.ranges
+            .iter()
+            .map(|r| apply_area_limit(r))
+            .filter(|r| r.is_some())
+            .map(|r| r.unwrap()).
+            collect::<Vec<_>>();
+        
+        // if any dimension is fully outside the limit then the whole thing is
+        if limited_area_ranges.len() == 3 {
+            limited_area_ranges.iter().map(|r| (r.end() - r.start() + 1) as i64).product()
+        } else {
+            0
+        }
+        // without the limit (why did they give a limit?)
+        // self.ranges.iter().map(|r| (r.end() - r.start() + 1) as i64).product()
     }
 
     pub fn intersection(&self, other: &Cuboid) ->Option<Cuboid> {
