@@ -8,11 +8,6 @@ pub struct Cuboid {
 
 const THREE_D_LENGTH: usize = 3;
 const THREE_D_RANGE: std::ops::Range<usize> = 0..3;
-const THREE_D_OTHER_D: [[usize; 2]; 3] = [
-    [2, 1],
-    [0, 2],
-    [1, 0],
-];
 
 fn apply_area_limit(r: &CubeRange) -> Option<CubeRange> {
     if *r.start() > 50 || *r.end() < -50 {
@@ -190,15 +185,6 @@ mod tests {
         let b = Cuboid::new(120..=170, 220..=270, 320..=370);
 
         assert_eq!(Some(Cuboid::new(120..=170, 220..=270, 320..=370)), b.intersection(&a));
-    }
-
-    #[test]
-    fn three_d_other_d() {
-        assert_eq!(vec![2, 1], THREE_D_OTHER_D[0]);
-
-        assert_eq!(vec![0, 2], THREE_D_OTHER_D[1]);
-
-        assert_eq!(vec![1, 0], THREE_D_OTHER_D[2]);
     }
 
     #[test]
