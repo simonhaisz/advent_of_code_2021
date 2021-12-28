@@ -25,7 +25,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    println!("{}", reactor.cube_count());
+    println!("{}", reactor.cube_count(false));
 
     Ok(())
 }

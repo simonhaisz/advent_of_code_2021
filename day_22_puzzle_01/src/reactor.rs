@@ -122,7 +122,6 @@ mod tests {
 
     #[test]
     fn example_small_reboot() {
-        let reactor = Reactor::new();
 
         let input = "on x=-20..26,y=-36..17,z=-47..7
         on x=-20..33,y=-21..23,z=-26..28
@@ -153,11 +152,11 @@ mod tests {
             .map(|c| c.trim())
             .collect::<Vec<_>>();
         
-        let mut r: Option<Reactor> = Some(reactor);
+        let mut reactor = Reactor::new();
         for command in commands.iter() {
-            r = Some(r.unwrap().run_command(&command));
+            reactor = reactor.run_command(&command);
         }
 
-        assert_eq!(590784, r.unwrap().cube_count());
+        assert_eq!(590784, reactor.cube_count());
     }
 }
