@@ -17,10 +17,6 @@ impl Player {
 		self.score
 	}
 
-	pub fn position(&self) -> u8 {
-		self.position
-	}
-
 	pub fn take_turn(&mut self, die: &mut Die) -> bool {
 		for _ in 0..3 {
 			let roll = die.next().unwrap();
