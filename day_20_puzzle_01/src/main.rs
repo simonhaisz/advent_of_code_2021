@@ -32,9 +32,12 @@ fn main() -> std::io::Result<()> {
     let enhancement = enhancement.unwrap();
 
     let image = Image::new(pixels);
-    let enhanced_image = image.enhance(&enhancement);
-    let enhanced_enhanced_image = enhanced_image.enhance(&enhancement);
+    println!("{}", image.lit_pixel_count());
 
+    let enhanced_image = image.enhance(&enhancement);
+    println!("{}", enhanced_image.lit_pixel_count());
+
+    let enhanced_enhanced_image = enhanced_image.enhance(&enhancement);
     println!("{}", enhanced_enhanced_image.lit_pixel_count());
 
     Ok(())

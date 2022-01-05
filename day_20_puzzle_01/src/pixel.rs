@@ -1,17 +1,21 @@
 use regex::Regex;
-use std::cmp;
 use std::fmt::{self, Display};
 
 pub type PixelGrid = Vec<String>;
 
+const DARK: char = '.';
+const LIGHT: char = '#';
+
 pub struct Image {
 	pixels: PixelGrid,
+	infinite_pixels: char,
 }
 
 impl Image {
 	pub fn new(pixels: PixelGrid) -> Image {
 		Image {
-			pixels
+			pixels,
+			infinite_pixels: DARK,
 		}
 	}
 
@@ -22,7 +26,10 @@ impl Image {
 			.filter(|l| !l.is_empty())
 			.collect();
 
-		Image::new(pixels)
+		Image {
+			pixels,
+			infinite_pixels: DARK,
+		}
 	}
 
 	pub fn size(&self) -> isize {
@@ -32,37 +39,26 @@ impl Image {
 	fn decode_pixel(&self, x: isize, y: isize) -> u32 {
 		let mut line = String::new();
 
-		let row_min = if y <= 0 {
-			for _ in y..=0 {
-				line.push_str("...");
-			}
-			0
-		} else {
-			y - 1
-		};
-		let row_max = cmp::min(y + 1, self.size() - 1);
+		let lower_limit = 0;
+		let upper_limit = self.size() - 1;
 		
-		for row in row_min..=row_max {
-			let column_min: usize = if x <= 0 {
-				for _ in x..=0 {
-					line.push_str(".");
+		for row in y - 1..=y + 1 {
+			if row < lower_limit || row > upper_limit {
+				for _ in 0..3 {
+					line.push(self.infinite_pixels);
 				}
-				0
 			} else {
-				(x - 1) as usize
-			};
-			let column_max = cmp::min(x + 1, self.size() - 1) as usize;
-			line.push_str(self.pixels[row as usize].get(column_min..=column_max).unwrap());
-			if x >= self.size() - 1 {
-				for _ in self.size() - 1..=x {
-					line.push_str(".");
+				for column in x - 1..=x + 1 {
+					if column < lower_limit || column > upper_limit {
+						line.push(self.infinite_pixels);
+					} else {
+						if let Some(p) = self.pixels[row as usize].chars().nth(column as usize) {
+							line.push(p);
+						} else {
+							panic!("Failed to find a pixel as location ({}, {}) in a square of size {}", column, row, self.size())
+						}
+					}
 				}
-			}
-		}
-
-		if y >= self.size() - 1 {
-			for _ in self.size() - 1..=y {
-				line.push_str("...");
 			}
 		}
 
@@ -84,7 +80,18 @@ impl Image {
 			enhanced_pixels.push(line);
 		}
 
-		Image::new(enhanced_pixels)
+		let enhanced_infinite_pixels = if self.infinite_pixels == DARK {
+			// all zeros means an index of 000000000
+			enhancement.chars().nth(0).unwrap()
+		} else {
+			// all ones means an index of 111111111
+			enhancement.chars().nth(511).unwrap()
+		};
+
+		Image {
+			pixels: enhanced_pixels,
+			infinite_pixels: enhanced_infinite_pixels,
+		}
 	}
 
 	pub fn lit_pixel_count(&self) -> usize {
