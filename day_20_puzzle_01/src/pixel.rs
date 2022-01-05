@@ -19,19 +19,6 @@ impl Image {
 		}
 	}
 
-	pub fn from(input: &str) -> Image {
-		let pixels = input
-			.split("\n")
-			.map(|l| l.trim().to_string())
-			.filter(|l| !l.is_empty())
-			.collect();
-
-		Image {
-			pixels,
-			infinite_pixels: DARK,
-		}
-	}
-
 	pub fn size(&self) -> isize {
 		self.pixels.len() as isize
 	}
@@ -126,8 +113,8 @@ pub fn decode(input: &str) -> u32 {
 	}
 
 	let binary = input
-		.replace(".", "0")
-		.replace("#", "1");
+		.replace(DARK, "0")
+		.replace(LIGHT, "1");
 	
 	u32::from_str_radix(&binary, 2).unwrap()
 }
@@ -135,6 +122,19 @@ pub fn decode(input: &str) -> u32 {
 #[cfg(test)]
 mod tests {
 	use super::*;
+
+	pub fn from(input: &str) -> Image {
+		let pixels = input
+			.split("\n")
+			.map(|l| l.trim().to_string())
+			.filter(|l| !l.is_empty())
+			.collect();
+
+		Image {
+			pixels,
+			infinite_pixels: DARK,
+		}
+	}
 
 	#[test]
 	#[should_panic(expected = "Invalid input 'this is not pixel data' - expected a series of . and # characters")]
@@ -158,7 +158,7 @@ mod tests {
 
 	#[test]
 	fn image_decode_pixel() {
-		let image = Image::from("
+		let image = from("
 #..#.
 #....
 ##..#
@@ -178,7 +178,7 @@ mod tests {
 
 	#[test]
 	fn image_enhance() {
-		let image = Image::from("
+		let image = from("
 #..#.
 #....
 ##..#
