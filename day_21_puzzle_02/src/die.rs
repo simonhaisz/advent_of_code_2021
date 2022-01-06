@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub fn dice_states() -> HashMap<u8, u32> {
+pub fn dice_states() -> HashMap<u16, u64> {
 	let mut states = HashMap::new();
 	
 	states.insert(3, 1);

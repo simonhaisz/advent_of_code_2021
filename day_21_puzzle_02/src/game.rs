@@ -9,19 +9,30 @@ pub fn determine_player_wins(player_1_states: &Vec<PlayerMultiverse>, player_2_s
 		if player_1_state.is_none() || player_2_state.is_none() {
 			break;
 		}
-		let mut turn_non_wins = 0;
+		let mut p1_count = 0;
+		let mut p1_win_count = 0;
+		let mut p1_non_win_count = 0;
 		for ((_, score), count) in player_1_state.unwrap().iter() {
+			p1_count += count;
 			if *score >= 21 {
-				player_1_wins += count;
+				p1_win_count += count;
 			} else {
-				turn_non_wins += count;
+				p1_non_win_count += count;
 			}
 		}
+		let mut p2_count = 0;
+		let mut p2_win_count = 0;
+		let mut p2_non_win_count = 0;
 		for ((_, score), count) in player_2_state.unwrap().iter() {
+			p2_count += count;
 			if *score >= 21 {
-				player_2_wins += std::cmp::min(*count, turn_non_wins);
+				p2_win_count += count;
+			} else  {
+				p2_non_win_count += count;
 			}
 		}
+
+		player_1_wins += p1_win_count;
 	}
 	(player_1_wins,	player_2_wins)
 }
