@@ -257,8 +257,8 @@ pub fn distance_matrices_match(matrix_a: &DistanceMatrix, matrix_b: &DistanceMat
 }
 
 pub fn distance_matrices_common_pairs(matrix_a: &DistanceMatrix, matrix_b: &DistanceMatrix) -> HashMap<i32, Vec<(LocationPair, LocationPair)>> {
-    let mut common
-
+    panic!()
+/*
     for (distance, pairs) in matrix_a.iter() {
         if let Some(other_pairs) = matrix_b.get(distance) {
             matching_distance_count += cmp::min(pairs.len(), other_pairs.len());
@@ -266,6 +266,7 @@ pub fn distance_matrices_common_pairs(matrix_a: &DistanceMatrix, matrix_b: &Dist
     }
 
     matching_distance_count >= MIN_MATCHING_LOCATION_COUNT
+     */
 }
 
 #[cfg(test)]
