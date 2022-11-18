@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::cmp;
 
 const AXES_COUNT: usize = 3;
 
@@ -7,6 +8,8 @@ const OTHER_AXES: [[usize; 2]; 3] = [
     [2, 0],
     [0, 1]
 ];
+
+const MIN_MATCHING_LOCATION_COUNT: usize = 12;
 
 pub type Location = [i32; AXES_COUNT];
 
@@ -66,6 +69,16 @@ pub fn relative_to(location: &Location, origin: &Location) -> Location {
         location[1] - origin[1],
         location[2] - origin[2]
     ]
+}
+
+pub fn distance_between(a: &Location, b: &Location) -> i32 {
+    let mut distance = 0;
+
+    for i in 0..3 {
+        distance += (a[i] - b[i]).abs();
+    }
+
+    distance
 }
 
 pub fn rotate_by(location: &Location, rotation: &Rotation) -> Location {
@@ -146,32 +159,39 @@ fn simplify_locations(locations: &Vec<Location>) -> Vec<Location> {
     relative
 }
 
-fn equal_to(a: &Vec<Location>, b: &Vec<Location>) -> bool {
-    if a.len() != b.len() {
-        false
-    } else {
-        let mut equals = true;
-        for i in 0..a.len() {
-            if a[i] != b[i] {
-                equals = false;
-                break;
+fn locations_match(locations_a: &Vec<Location>, locations_b: &Vec<Location>) -> bool {
+    let mut matching_locations = 0;
+    
+    'a: for a in locations_a.iter() {
+        for b in locations_b.iter() {
+            if distance_between(a, b) == 0 {
+                matching_locations += 1;
+                continue 'a;
             }
         }
-        equals
+    }
+
+    if matching_locations > 0 {
+        matching_locations >= MIN_MATCHING_LOCATION_COUNT
+    } else {
+        false
     }
 }
 
-fn sets_match(a: &Vec<Location>, b: &Vec<Location>) -> bool {
-    let a = simplify_locations(&a);
+fn sets_match(locations_a: &Vec<Location>, locations_b: &Vec<Location>) -> bool {
+    let matrix_a = distance_matrix(&locations_a);
+    let matrix_b = distance_matrix(&locations_b);
 
-    for r in UNIQUE_ROTATIONS.iter() {
-        let b = simplify_locations(&b)
-            .iter()
-            .map(|l| rotate_by(&l, &r))
-            .collect();
-
-        if equal_to(&a, &b) {
-            return true;
+    if distance_matrices_match(&matrix_a, &matrix_b) {
+        for r in UNIQUE_ROTATIONS.iter() {
+            let roated_b = locations_b
+                .iter()
+                .map(|l| rotate_by(&l, &r))
+                .collect();
+    
+            if locations_match(&locations_a, &roated_b) {
+                return true;
+            }
         }
     }
 
@@ -199,6 +219,53 @@ fn unique_rotations(location: &Location) -> HashMap<Location, Vec<Rotation>> {
     }
 
     unique_rotations
+}
+
+pub type LocationPair = (Location, Location);
+pub type DistanceMatrix = HashMap<i32, Vec<LocationPair>>;
+
+pub fn distance_matrix(locations: &Vec<Location>) -> DistanceMatrix {
+
+    let mut matrix = HashMap::new();
+
+    let locations_count = locations.len();
+
+    for outer_index in 0..locations_count - 1 {
+        for inner_index in outer_index + 1..locations_count {
+            let outer = locations[outer_index];
+            let inner = locations[inner_index];
+            let distance = distance_between(&outer, &inner);
+
+            let entry = matrix.entry(distance).or_insert(Vec::new());
+            entry.push((outer, inner));
+        }
+    }
+
+    matrix
+}
+
+pub fn distance_matrices_match(matrix_a: &DistanceMatrix, matrix_b: &DistanceMatrix) -> bool {
+    let mut matching_distance_count = 0;
+
+    for (distance, pairs) in matrix_a.iter() {
+        if let Some(other_pairs) = matrix_b.get(distance) {
+            matching_distance_count += cmp::min(pairs.len(), other_pairs.len());
+        }
+    }
+
+    matching_distance_count >= MIN_MATCHING_LOCATION_COUNT
+}
+
+pub fn distance_matrices_common_pairs(matrix_a: &DistanceMatrix, matrix_b: &DistanceMatrix) -> HashMap<i32, Vec<(LocationPair, LocationPair)>> {
+    let mut common
+
+    for (distance, pairs) in matrix_a.iter() {
+        if let Some(other_pairs) = matrix_b.get(distance) {
+            matching_distance_count += cmp::min(pairs.len(), other_pairs.len());
+        }
+    }
+
+    matching_distance_count >= MIN_MATCHING_LOCATION_COUNT
 }
 
 #[cfg(test)]
@@ -410,31 +477,117 @@ mod tests {
     }
 
     #[test]
-    fn sets_match_simple() {
-        let a = locations_from("-618,-824,-621
-        -537,-823,-458
-        -447,-329,318
-        404,-588,-901
-        544,-627,-890
+    fn matrices_simple() {
+        let a = locations_from("404,-588,-901
         528,-643,409
-        -661,-816,-575
+        -838,591,734
         390,-675,-793
-        423,-701,434
+        -537,-823,-458
+        -485,-357,347
         -345,-311,381
-        459,-707,401
-        -485,-357,347");
+        -661,-816,-575
+        -876,649,763
+        -618,-824,-621
+        553,345,-567
+        474,580,667
+        -447,-329,318
+        -584,868,-557
+        544,-627,-890
+        564,392,-477
+        455,729,728
+        -892,524,684
+        -689,845,-530
+        423,-701,434
+        7,-33,-71
+        630,319,-379
+        443,580,662
+        -789,900,-551
+        459,-707,401");
 
         let b = locations_from("686,422,578
         605,423,415
         515,917,-361
         -336,658,858
+        95,138,22
         -476,619,847
+        -340,-569,-846
+        567,-361,727
         -460,603,-452
+        669,-402,600
         729,430,532
+        -500,-761,534
         -322,571,750
+        -466,-666,-811
+        -429,-592,574
         -355,545,-477
+        703,-491,-529
+        -328,-685,520
         413,935,-424
         -391,539,-444
+        586,-435,557
+        -364,-763,-893
+        807,-499,-711
+        755,-354,-619
+        553,889,-390");
+
+        let matrix_a = distance_matrix(&a);
+        let matrix_b = distance_matrix(&b);
+
+        assert_eq!(true, distance_matrices_match(&matrix_a, &matrix_b));
+    }
+
+    #[test]
+    fn sets_simple() {
+        let a = locations_from("404,-588,-901
+        528,-643,409
+        -838,591,734
+        390,-675,-793
+        -537,-823,-458
+        -485,-357,347
+        -345,-311,381
+        -661,-816,-575
+        -876,649,763
+        -618,-824,-621
+        553,345,-567
+        474,580,667
+        -447,-329,318
+        -584,868,-557
+        544,-627,-890
+        564,392,-477
+        455,729,728
+        -892,524,684
+        -689,845,-530
+        423,-701,434
+        7,-33,-71
+        630,319,-379
+        443,580,662
+        -789,900,-551
+        459,-707,401");
+
+        let b = locations_from("686,422,578
+        605,423,415
+        515,917,-361
+        -336,658,858
+        95,138,22
+        -476,619,847
+        -340,-569,-846
+        567,-361,727
+        -460,603,-452
+        669,-402,600
+        729,430,532
+        -500,-761,534
+        -322,571,750
+        -466,-666,-811
+        -429,-592,574
+        -355,545,-477
+        703,-491,-529
+        -328,-685,520
+        413,935,-424
+        -391,539,-444
+        586,-435,557
+        -364,-763,-893
+        807,-499,-711
+        755,-354,-619
         553,889,-390");
 
         assert_eq!(true, sets_match(&a, &b));
